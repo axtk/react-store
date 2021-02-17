@@ -14,10 +14,16 @@ export const TaskStore = new Store();
 export const useTaskStore = useStore.bind(null, TaskStore);
 ```
 
-The component below will render data retrieved from `TaskStore`. `TaskStore` can be prefilled on the server during the server-side rendering phase, or from a serialized object during client-side rendering, or it can be left intact without any extra preparations, and then it will be filled inside the `useEffect` hook when the component gets mounted.
+The component below will be rendered based on the data retrieved from `TaskStore`. `TaskStore` can be filled in several ways:
+
+- on the server during the server-side rendering phase, or
+- from a serialized object during client-side rendering, or
+- inside the `useEffect` hook when the component gets mounted.
+
+In all of these setups, the component's code remains the same.
 
 ```jsx
-// components/TaskCard.js
+// components/TaskCard.jsx
 import {useEffect} from 'react';
 import {TaskStore, useTaskStore} from '../stores/TaskStore';
 
