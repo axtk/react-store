@@ -7,11 +7,11 @@ This package extends *[store](https://github.com/axtk/store)* with the React hoo
 ## Example
 
 ```js
-// stores/TaskStore.js
-import {Store, useStore} from 'react-store';
+// useTaskStore.js
+import {useStore} from 'react-store';
 
-export const TaskStore = new Store();
-export const useTaskStore = useStore.bind(null, TaskStore);
+const useTaskStore = useStore.bind(null, 'TaskStore');
+export default useTaskStore;
 ```
 
 The component below will be rendered based on the data retrieved from `TaskStore`. `TaskStore` can be filled in several ways:
@@ -23,12 +23,12 @@ The component below will be rendered based on the data retrieved from `TaskStore
 In all of these setups, the component's code remains the same.
 
 ```jsx
-// components/TaskCard.jsx
+// App.jsx
 import {useEffect} from 'react';
-import {TaskStore, useTaskStore} from '../stores/TaskStore';
+import useTaskStore from './useTaskStore';
 
 export default ({id}) => {
-    let [taskData, setTaskData] = useTaskStore(id);
+    let [TaskStore, taskData, setTaskData] = useTaskStore(id);
     // Initially, `TaskStore` is empty and `taskData` is undefined.
     // The `useTaskStore` hook will push updates on `TaskStore` to `taskData`.
 
@@ -47,7 +47,7 @@ export default ({id}) => {
         return null;
 
     return (
-        <div className="task-card">
+        <div className="app">
             <div class="type">
                 Type: <strong>{taskData.type}</strong>
             </div>
@@ -57,4 +57,31 @@ export default ({id}) => {
         </div>
     );
 };
+```
+
+```jsx
+// index.js
+import ReactDOM from 'react-dom';
+import {Store, StoreProvider} from 'react-store';
+import App from './App';
+
+ReactDOM.render(
+    <StoreProvider stores={{TaskStore: new Store()}}><App/></StoreProvider>,
+    document.querySelector('#root')
+);
+```
+
+Since all stores passed to `StoreProvider` are initialized in the same manner, there is a shorthand option to create a necessary number of stores by passing a number to the `stores` prop, which is equivalent to passing an array of stores of the same length:
+
+```jsx
+ReactDOM.render(
+    <StoreProvider stores={1}><App/></StoreProvider>,
+    document.querySelector('#root')
+);
+```
+
+If the stores in a `StoreProvider` are an array, each individual store can be retrieved by an index:
+
+```js
+const useTaskStore = useStore.bind(null, 0);
 ```

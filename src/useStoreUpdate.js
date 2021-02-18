@@ -1,7 +1,12 @@
-import {useEffect} from 'react';
+import {useContext, useEffect} from 'react';
+import StoreContext from './StoreContext';
+import validateStore from '../lib/validateStore';
 
 export default (store, callback, deps) => {
-    const baseDeps = [store, callback];
+    let baseDeps = [store, callback];
+    let stores = useContext(StoreContext);
+
+    store = validateStore(store, stores);
 
     useEffect(() => {
         return store.onUpdate(() => {

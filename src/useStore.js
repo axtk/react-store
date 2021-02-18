@@ -1,18 +1,27 @@
-import {useState, useEffect} from 'react';
+import {useContext, useState, useEffect} from 'react';
+import StoreContext from './StoreContext';
+import validateStore from '../lib/validateStore';
 
 export default (store, path, defaultValue) => {
+    let stores = useContext(StoreContext);
     let [value, setValue] = useState(defaultValue);
+
+    store = validateStore(store, stores);
+
+    let getStoreValue = () => path ? store.get(path) : store.getState();
+    let setStoreValue = value => path ? store.set(path, value) : store.setState(value);
 
     useEffect(() => {
         return store.onUpdate(() => {
-            setValue(path ? store.get(path) : store.getState());
+            setValue(getStoreValue());
         });
     }, [store, path]);
 
-    let storeValue = path ? store.get(path) : store.getState();
+    let storeValue = getStoreValue();
 
     return [
+        store,
         storeValue === undefined ? defaultValue : storeValue,
-        value => path ? store.set(path, value) : store.setState(value),
+        setStoreValue,
     ];
 };
