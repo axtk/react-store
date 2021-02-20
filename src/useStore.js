@@ -1,13 +1,10 @@
-import {useContext, useState, useEffect} from 'react';
-import StoreContext from './StoreContext';
-import validateStore from '../lib/validateStore';
+import {useState, useEffect} from 'react';
+import useRelevantStore from '../lib/useRelevantStore';
 
 export default (store, path, defaultValue) => {
-    let stores = useContext(StoreContext);
+    store = useRelevantStore(store);
+
     let [value, setValue] = useState(defaultValue);
-
-    store = validateStore(store, stores);
-
     let getStoreValue = () => path ? store.get(path) : store.getState();
     let setStoreValue = value => path ? store.set(path, value) : store.setState(value);
 
