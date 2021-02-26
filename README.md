@@ -13,7 +13,9 @@ import {Store, StoreProvider} from '@axtk/react-store';
 import App from './App';
 
 ReactDOM.render(
-    <StoreProvider stores={{TaskStore: new Store()}}><App/></StoreProvider>,
+    <StoreProvider stores={{TaskStore: new Store()}}>
+        <App/>
+    </StoreProvider>,
     document.querySelector('#app')
 );
 ```
