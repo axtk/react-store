@@ -2,9 +2,9 @@
 ![browser](https://img.shields.io/badge/browser-✓-blue?labelColor=dodgerblue&color=dodgerblue&style=flat-square)
 [![SSR](https://img.shields.io/badge/SSR-✓-blue?labelColor=dodgerblue&color=dodgerblue&style=flat-square)](#ssr)
 
-An instance of the `Store` class, inherited from the *[store](https://github.com/axtk/store)* package, represents a storage for data shared across multiple components.
+*React store and related hooks for shared state management*
 
-`<StoreProvider>` specifies the stores available to the nested components (either as a key-value map or an array):
+An instance of the `Store` class represents a storage for data shared across multiple components. `<StoreProvider>` specifies the stores available to the nested components:
 
 ```jsx
 // index.js
@@ -20,7 +20,9 @@ ReactDOM.render(
 );
 ```
 
-Further on, the provided store can be retrieved by its key by means of the `useStore` hook.
+The `stores` prop accepts either a key-value map or an array of stores. Also, passing an arbitrary number `n` to the `stores` prop is equivalent to passing an array of `n` empty stores.
+
+Further on, the provided store can be retrieved by its key (or index) by means of the `useStore` hook.
 
 ```jsx
 // App.jsx
@@ -62,9 +64,11 @@ export default ({id}) => {
 };
 ```
 
-This is essentially all of it, but some minor improvements can be added to this.
+This is essentially all of it.
 
-The store keys available to the application and optionally the hooks associated with them can be collected in a single place to be further reused:
+### Custom store-specific hooks
+
+Optionally, the keys of the stores available to the application and the hooks associated with them can be collected in a single place to be further reused:
 
 ```js
 // stores.js
@@ -77,30 +81,6 @@ export const Stores = {
 export const useTaskStore = useStore.bind(null, Stores.TASK_STORE);
 ```
 
-It can be handy to split shared data among multiple stores, each dealing with a specific type of data or a specific role. Since all stores passed to `StoreProvider` are initialized in the same manner, there is a shorthand option to create a necessary number of stores by passing a number to the `stores` prop, which is equivalent to passing an array of stores of that length:
-
-```jsx
-ReactDOM.render(
-    <StoreProvider stores={1}><App/></StoreProvider>,
-    document.querySelector('#root')
-);
-```
-
-If the stores in a `StoreProvider` are an array, each individual store can be retrieved by an index:
-
-```js
-// stores.js
-import {useStore} from '@axtk/react-store';
-
-export const Stores = {
-    TASK_STORE: 0
-    // the array index 0 has replaced the 'TaskStore' key
-};
-
-export const useTaskStore = useStore.bind(null, Stores.TASK_STORE);
-// unchanged
-```
-
 # SSR
 
 While rendering server-side, it can be convenient to pass pre-filled stores to the application, so that the components were rendered according to the store data:
@@ -111,7 +91,7 @@ import {StoreProvider, Store} from '@axtk/react-store';
 
 // with Express
 app.get('/', prefetchAppData, (req, res) => {
-    // `TaskStore` is filled with the data, previously fetched and put
+    // `TaskStore` is filled with the data previously fetched and put
     // into the request `req` object in the `prefetchAppData` middleware
     const html = ReactDOMServer.renderToString(
         <StoreProvider stores={{
@@ -122,7 +102,7 @@ app.get('/', prefetchAppData, (req, res) => {
     );
 
     const serializedAppData = JSON.stringify(req.prefetchedAppData)
-        .replace(/</g, '\\u003c');
+        .replace(/</g, '\\x3c');
 
     res.send(`
         <!doctype html>
@@ -157,3 +137,7 @@ ReactDOM.hydrate(
 
 delete window._prefetchedAppData;
 ```
+
+# Also
+
+- *[store](https://github.com/axtk/store)*, the `Store` class without React hooks
