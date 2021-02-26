@@ -29,9 +29,9 @@ import {useStore} from '@axtk/react-store';
 
 export default ({id}) => {
     let [TaskStore, taskData, setTaskData] = useStore('TaskStore', id);
-    // Initially, `TaskStore` is empty and `taskData` is undefined.
-    // The `useTaskStore` hook will push updates on `TaskStore` to
-    // `taskData`.
+    // If not pre-filled, `TaskStore` is initially empty and `taskData`
+    // is undefined. Whenever the store gets updated the `useStore`
+    // hook will cause updates in `taskData` as well.
 
     useEffect(() => {
         // If the data was already in the store, this effect can be
