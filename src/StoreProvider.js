@@ -1,5 +1,5 @@
 import {createElement} from 'react';
-import Store from 'store';
+import Store from '@axtk/store';
 import StoreContext from './StoreContext';
 
 export default ({stores, children}) => {

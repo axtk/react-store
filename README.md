@@ -1,4 +1,6 @@
-# react-store
+[![npm](https://img.shields.io/npm/v/@axtk/react-store?labelColor=royalblue&color=royalblue&style=flat-square)](https://www.npmjs.com/package/@axtk/react-store)
+![browser](https://img.shields.io/badge/browser-✓-blue?labelColor=dodgerblue&color=dodgerblue&style=flat-square)
+![node](https://img.shields.io/badge/node-✓-blue?labelColor=dodgerblue&color=dodgerblue&style=flat-square)
 
 An instance of the `Store` class, inherited from the *[store](https://github.com/axtk/store)* package, represents a storage for data shared across multiple components.
 
@@ -7,7 +9,7 @@ An instance of the `Store` class, inherited from the *[store](https://github.com
 ```jsx
 // index.js
 import ReactDOM from 'react-dom';
-import {Store, StoreProvider} from 'react-store';
+import {Store, StoreProvider} from '@axtk/react-store';
 import App from './App';
 
 ReactDOM.render(
@@ -21,22 +23,25 @@ Further on, the provided store can be retrieved by its key by means of the `useS
 ```jsx
 // App.jsx
 import {useEffect} from 'react';
-import {useStore} from 'react-store';
+import {useStore} from '@axtk/react-store';
 
 export default ({id}) => {
     let [TaskStore, taskData, setTaskData] = useStore('TaskStore', id);
     // Initially, `TaskStore` is empty and `taskData` is undefined.
-    // The `useTaskStore` hook will push updates on `TaskStore` to `taskData`.
+    // The `useTaskStore` hook will push updates on `TaskStore` to
+    // `taskData`.
 
     useEffect(() => {
-        // If the data was already in the store, this effect can be skipped.
+        // If the data was already in the store, this effect can be
+        // skipped.
         if (taskData) return;
 
         fetch(`/tasks/${id}`)
             .then(res => res.json())
             .then(taskData => TaskStore.set(id, taskData));
-            // `TaskStore.set()` will cause an update in `TaskStore` and then in
-            // `taskData` (and elsewhere where the `useStore('TaskStore')` hook is used).
+            // `TaskStore.set()` will cause an update in `TaskStore`
+            // and then in `taskData` (and elsewhere where the
+            // `useStore('TaskStore')` hook is used).
     }, []);
 
     if (!taskData)
@@ -61,7 +66,7 @@ The store keys available to the application and optionally the hooks associated 
 
 ```js
 // stores.js
-import {useStore} from 'react-store';
+import {useStore} from '@axtk/react-store';
 
 export const Stores = {
     TASK_STORE: 'TaskStore'
@@ -83,29 +88,33 @@ If the stores in a `StoreProvider` are an array, each individual store can be re
 
 ```js
 // stores.js
-import {useStore} from 'react-store';
+import {useStore} from '@axtk/react-store';
 
 export const Stores = {
-    TASK_STORE: 0 // used to be 'TaskStore' when `stores` were a key-value map
+    TASK_STORE: 0
+    // the array index 0 has replaced the 'TaskStore' key
 };
 
-export const useTaskStore = useStore.bind(null, Stores.TASK_STORE); // unchanged
+export const useTaskStore = useStore.bind(null, Stores.TASK_STORE);
+// unchanged
 ```
 
-## SSR
+# SSR
 
 While rendering server-side, it can be convenient to pass pre-filled stores to the application, so that the components were rendered according to the store data:
 
 ```jsx
 // ... imports
-import {StoreProvider, Store} from 'react-store';
+import {StoreProvider, Store} from '@axtk/react-store';
 
 // with Express
 app.get('/', prefetchAppData, (req, res) => {
     // `TaskStore` is filled with the data, previously fetched and put
     // into the request `req` object in the `prefetchAppData` middleware
     const html = ReactDOMServer.renderToString(
-        <StoreProvider stores={{TaskStore: new Store(req.prefetchedAppData.tasks)}}>
+        <StoreProvider stores={{
+            TaskStore: new Store(req.prefetchedAppData.tasks)
+        }}>
             <App/>
         </StoreProvider>
     );
@@ -119,7 +128,9 @@ app.get('/', prefetchAppData, (req, res) => {
             <head><title>App</title></head>
             <body>
                 <div id="app">${html}</div>
-                <script>window._prefetchedAppData = ${serializedAppData};</script>
+                <script>
+                    window._prefetchedAppData = ${serializedAppData};
+                </script>
                 <script src="/index.js"></script>
             </body>
         </html>
@@ -134,7 +145,9 @@ When the application is rendered in the browser, the browser store instances can
 // ... imports
 
 ReactDOM.hydrate(
-    <StoreProvider stores={{TaskStore: new Store(window._prefetchedAppData.tasks)}}>
+    <StoreProvider stores={{
+        TaskStore: new Store(window._prefetchedAppData.tasks)
+    }}>
         <App/>
     </StoreProvider>,
     document.querySelector('#app')
