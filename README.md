@@ -71,6 +71,8 @@ export default ({id}) => {
 
 This is essentially all of it.
 
+Although the `useStore` hook responds to updates anywhere in the specific store, the least required immutability maintained by the `Store` class (which means updating only the changed branch of the stored data) helps the React's virtual DOM reconciliation mechanism to apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage.
+
 ### Custom store-specific hooks
 
 Optionally, the keys of the stores available to the application and the hooks associated with them can be collected in a single place to be further reused:
