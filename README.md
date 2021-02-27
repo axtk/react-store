@@ -22,7 +22,7 @@ ReactDOM.render(
 
 The `stores` prop accepts either a key-value map or an array of stores. Also, passing an arbitrary number `n` to the `stores` prop is equivalent to passing an array of `n` empty stores.
 
-Further on, the provided store can be retrieved by its key (or index) by means of the `useStore` hook.
+Further on, the provided store can be retrieved by its key (or index) by means of the `useStore` hook:
 
 ```jsx
 // App.jsx
@@ -30,10 +30,15 @@ import {useEffect} from 'react';
 import {useStore} from '@axtk/react-store';
 
 export default ({id}) => {
-    let [TaskStore, taskData, setTaskData] = useStore('TaskStore', id);
-    // If not pre-filled, `TaskStore` is initially empty and `taskData`
-    // is undefined. Whenever the store gets updated the `useStore`
-    // hook will cause updates in `taskData` as well.
+    let taskStore = useStore('TaskStore');
+    // The `useStore` hook accepts a key of a store from the
+    // `<StoreProvider>` or an instance of the `Store` class as the
+    // first argument and, optionally, a store update callback as
+    // the second argument.
+
+    let taskData = taskStore.get(id);
+    // If not pre-filled, `taskStore` is initially empty and `taskData`
+    // is undefined.
 
     useEffect(() => {
         // If the data was already in the store, this effect can be
@@ -42,10 +47,10 @@ export default ({id}) => {
 
         fetch(`/tasks/${id}`)
             .then(res => res.json())
-            .then(taskData => TaskStore.set(id, taskData));
-            // `TaskStore.set()` will cause an update in `TaskStore`
-            // and then in `taskData` (and elsewhere where the
-            // `useStore('TaskStore')` hook is used).
+            .then(data => taskStore.set(id, data));
+            // Whenever the store gets updated the `useStore`
+            // hook will cause a re-render causing an update in
+            // `taskData` as well.
     }, []);
 
     if (!taskData)

@@ -1,24 +1,26 @@
-import {useState, useEffect} from 'react';
-import useRelevantStore from '../lib/useRelevantStore';
+import {useContext, useState, useEffect} from 'react';
+import Store from '@axtk/store';
+import StoreContext from './StoreContext';
 
-export default (store, path, defaultValue) => {
-    store = useRelevantStore(store);
+/**
+ * @param {number | string | Store} store - a key of a store in StoreProvider or a Store class instance
+ * @param {function} [onStoreUpdate] - an optional store update callback
+ * @returns {Store}
+ */
+export default (store, onStoreUpdate) => {
+    let stores = useContext(StoreContext);
+    let [storeRevision, setStoreRevision] = useState();
 
-    let [value, setValue] = useState(defaultValue);
-    let getStoreValue = () => path ? store.get(path) : store.getState();
-    let setStoreValue = value => path ? store.set(path, value) : store.setState(value);
+    store = store instanceof Store ? store : (stores && stores[store]);
 
     useEffect(() => {
-        return store.onUpdate(() => {
-            setValue(getStoreValue());
-        });
-    }, [store, path]);
+        if (store instanceof Store) {
+            return store.onUpdate(() => {
+                setStoreRevision(store.getRevision());
+                if (onStoreUpdate) onStoreUpdate(store);
+            });
+        }
+    }, [store, onStoreUpdate]);
 
-    let storeValue = getStoreValue();
-
-    return [
-        store,
-        storeValue === undefined ? defaultValue : storeValue,
-        setStoreValue,
-    ];
+    return store;
 };
