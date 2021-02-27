@@ -75,18 +75,15 @@ Although the `useStore` hook responds to updates anywhere in the specific store,
 
 ### Custom store-specific hooks
 
-Optionally, the keys of the stores available to the application and the hooks associated with them can be collected in a single place to be further reused:
+Optionally, the hooks associated with the stores available to the application can be collected in a single place to be further reused:
 
 ```js
 // stores.js
 import {useStore} from '@axtk/react-store';
-
-export const Stores = {
-    TASK_STORE: 'TaskStore'
-};
-
-export const useTaskStore = useStore.bind(null, Stores.TASK_STORE);
+export const useTaskStore = useStore.bind(null, 'TaskStore');
 ```
+
+The store keys can also be collected within a single enum or a constant object.
 
 # SSR
 
