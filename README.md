@@ -37,6 +37,8 @@ export default ({id}) => {
     // `<StoreProvider>` or an instance of the `Store` class as the
     // first argument and, optionally, a store update callback as
     // the second argument.
+    // The component will safely quit listening to the store updates
+    // under the hood when it gets unmounted.
 
     let taskData = taskStore.get(id);
     // If not pre-filled, `taskStore` is initially empty, `taskData`
