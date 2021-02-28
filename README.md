@@ -2,9 +2,11 @@
 ![browser](https://img.shields.io/badge/browser-✓-blue?labelColor=dodgerblue&color=dodgerblue&style=flat-square)
 [![SSR](https://img.shields.io/badge/SSR-✓-blue?labelColor=dodgerblue&color=dodgerblue&style=flat-square)](#ssr)
 
-*React store and related hooks for shared state management*
+*React store and the related hook for unopinionated shared state management*
 
-An instance of the `Store` class represents a storage for data shared across multiple components. `<StoreProvider>` specifies the stores available to the nested components:
+The state of an application is often distributed between local state enclosed within a specific component and shared data residing in the outer scope of the components and accessible from within many of them. While local state can be retrieved by means of the built-in `useState` React hook, this package provides a similar `useStore` hook to deal with shared state.
+
+In the following code sample, an instance of the `Store` class represents a storage for data shared across multiple components. `<StoreProvider>` specifies the stores available to the nested components:
 
 ```jsx
 // index.js
@@ -20,7 +22,7 @@ ReactDOM.render(
 );
 ```
 
-The `stores` prop accepts either a key-value map or an array of stores. Also, passing an arbitrary number `n` to the `stores` prop is equivalent to passing an array of `n` empty stores.
+The `stores` prop accepts either a key-value map or an array of stores. (Also, passing an arbitrary number `n` to the `stores` prop is equivalent to passing an array of `n` empty stores.)
 
 Further on, the provided store can be retrieved by its key (or index) by means of the `useStore` hook:
 
@@ -37,8 +39,9 @@ export default ({id}) => {
     // the second argument.
 
     let taskData = taskStore.get(id);
-    // If not pre-filled, `taskStore` is initially empty and `taskData`
-    // is undefined.
+    // If not pre-filled, `taskStore` is initially empty, `taskData`
+    // is undefined, and then the following effect is required to
+    // fetch the data.
 
     useEffect(() => {
         // If the data was already in the store, this effect can be
@@ -71,7 +74,7 @@ export default ({id}) => {
 
 This is essentially all of it.
 
-Although the `useStore` hook responds to updates anywhere in the specific store, the least required immutability maintained by the `Store` class (which means updating only the changed branch of the stored data) helps the React's virtual DOM reconciliation mechanism to apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage.
+Although the `useStore` hook responds to updates occurring anywhere in the specific store, the least required immutability maintained by the `Store` class (which means updating only the changed branch of the stored data) helps the React's virtual DOM reconciliation mechanism to apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage.
 
 ### Custom store-specific hooks
 
