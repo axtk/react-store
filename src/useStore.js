@@ -4,10 +4,9 @@ import StoreContext from './StoreContext';
 
 /**
  * @param {number | string | Store} store - a key of a store in StoreProvider or a Store class instance
- * @param {function} [onStoreUpdate] - an optional store update callback
  * @returns {Store}
  */
-export default (store, onStoreUpdate) => {
+export default store => {
     let stores = useContext(StoreContext);
     let [storeRevision, setStoreRevision] = useState();
 
@@ -17,10 +16,9 @@ export default (store, onStoreUpdate) => {
         if (store instanceof Store) {
             return store.onUpdate(() => {
                 setStoreRevision(store.getRevision());
-                if (onStoreUpdate) onStoreUpdate(store);
             });
         }
-    }, [store, onStoreUpdate]);
+    }, [store]);
 
     return store;
 };

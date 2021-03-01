@@ -34,9 +34,7 @@ import {useStore} from '@axtk/react-store';
 export default ({id}) => {
     let taskStore = useStore('TaskStore');
     // The `useStore` hook accepts a key of a store from the
-    // `<StoreProvider>` or an instance of the `Store` class as the
-    // first argument and, optionally, a store update callback as
-    // the second argument.
+    // `<StoreProvider>` or an instance of the `Store` class.
     // The component will safely quit listening to the store updates
     // under the hood when it gets unmounted.
 
