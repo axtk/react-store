@@ -40,15 +40,10 @@ export default ({id}) => {
     // The component will safely quit listening to the store updates
     // under the hood when it gets unmounted.
 
-    let taskData = taskStore.get(id);
-    // If not pre-filled, `taskStore` is initially empty, `taskData`
-    // is undefined, and then the following effect is required to
-    // fetch the data.
-
     useEffect(() => {
-        // If the data was already in the store, this effect can be
-        // skipped.
-        if (taskData) return;
+        // If the required data is already in the store, this effect
+        // can be skipped.
+        if (taskStore.get(id)) return;
 
         fetch(`/tasks/${id}`)
             .then(res => res.json())
@@ -56,7 +51,11 @@ export default ({id}) => {
             // Whenever the store gets updated the `useStore`
             // hook will cause a re-render causing an update in
             // `taskData` as well.
-    }, []);
+    }, [taskStore]);
+
+    let taskData = taskStore.get(id);
+    // If not pre-filled, `taskStore` is initially empty and `taskData`
+    // is undefined until the above effect completes the request.
 
     if (!taskData)
         return null;
