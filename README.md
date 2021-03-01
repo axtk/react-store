@@ -4,8 +4,6 @@
 
 *React store and the related hook for unopinionated shared state management*
 
-The state of an application is often distributed between local state enclosed within a specific component and shared data residing in the outer scope of the components and accessible from within many of them. While local state can be retrieved by means of the built-in `useState` React hook, this package provides a React hook to deal with shared state.
-
 In the following code sample, an instance of the `Store` class represents a storage for data shared across multiple components. `<StoreProvider>` specifies the stores available to the nested components:
 
 ```jsx
