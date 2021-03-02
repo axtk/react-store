@@ -85,7 +85,7 @@ export const useTaskStore = useStore.bind(null, 'TaskStore');
 
 The store keys can also be collected within a single enum or a constant object.
 
-# SSR
+# Server-side rendering (SSR)
 
 While rendering server-side, it can be convenient to pass pre-filled stores to the application, so that the components were rendered according to the store data:
 
@@ -142,6 +142,51 @@ ReactDOM.hydrate(
 delete window._prefetchedAppData;
 ```
 
+# Local stores for async and persistent state
+
+Since the `useStore` hook accepts standalone instances of the `Store` class (not necessarily coming from a `<StoreProvider>`), a store instance created specifically for a component can be passed to the hook to be further used as an unmount-safe and remount-persistent storage for asynchronously fetched data intended for local use.
+
+By saving the store state to `localStorage` in a store update handler, a store can be further enhanced to maintain state persistence across page reloads.
+
+```jsx
+// A locally created store can act as a kind of the component's local
+// state persistent across unmounts and remounts.
+const itemStore = new Store();
+
+const Item = ({id}) => {
+    useStore(itemStore);
+
+    // Saving the store state to localStorage makes the component's
+    // state persistent across page reloads.
+    useEffect(() => {
+        try {
+            let state = JSON.parse(localStorage.getItem('items'));
+            if (state != null) itemStore.setState(state);
+        }
+        catch(e) {}
+
+        // (The `onUpdate` method returns an unsubscription function
+        // enabling the `useEffect` hook to complete its lifecycle.)
+        return itemStore.onUpdate(() => {
+            try {
+                let value = JSON.stringify(itemStore.getState());
+                localStorage.setItem('items', value);
+            }
+            catch(e) {}
+        });
+    }, [itemStore]);
+
+    useEffect(() => {
+        // Fetching and pushing async data to itemStore.
+        // ... itemStore.set(id, {data, loading: false});
+    }, [itemStore]);
+
+    let {data, loading} = itemStore.get(id);
+
+    // ...
+};
+```
+
 # Also
 
-- *[store](https://github.com/axtk/store)*, the `Store` class without React hooks
+- *[@axtk/store](https://github.com/axtk/store)*, the `Store` class without React hooks
