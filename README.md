@@ -4,7 +4,7 @@
 
 *React store and the related hook for unopinionated shared state management*
 
-In the following code sample, an instance of the `Store` class represents a storage for data shared across multiple components. `<StoreProvider>` specifies the stores available to the nested components:
+In the following code sample, an instance of the `Store` class represents a storage for data shared across multiple components. `<StoreProvider>` specifies the stores available to all nested components:
 
 ```jsx
 // index.js
@@ -20,7 +20,7 @@ ReactDOM.render(
 );
 ```
 
-The `stores` prop accepts either a key-value map or an array of stores. (Also, passing an arbitrary number `n` to the `stores` prop is equivalent to passing an array of `n` empty stores.)
+The `stores` prop accepts either a key-value map or an array of stores.
 
 Further on, the provided store can be retrieved by its key (or index) by means of the `useStore` hook:
 
@@ -46,7 +46,7 @@ export default ({id}) => {
             .then(data => taskStore.set(id, data));
             // Whenever the store gets updated the `useStore`
             // hook will cause a re-render causing an update in
-            // `taskData` as well.
+            // `taskData` (below) as well.
     }, [taskStore]);
 
     let taskData = taskStore.get(id);
@@ -183,7 +183,7 @@ const Item = ({id}) => {
 
     let {data, loading} = itemStore.get(id);
 
-    // ...
+    // Rendering the item.
 };
 ```
 
