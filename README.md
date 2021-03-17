@@ -85,6 +85,14 @@ export const useTaskStore = useStore.bind(null, 'TaskStore');
 
 The store keys can also be collected within a single enum or a constant object.
 
+### `Store` and `ImmutableStore`
+
+These are the two classes representing stores included in this package.
+
+`Store` is a lightweight store that stores data chunks as they are, and implies that data chunks that have been passed to a store or retrieved from it should be handled as read-only to avoid changes in the store state without notifying its listeners.
+
+`ImmutableStore` is a less lightweight store that maintains immutability of its internal state, receives and returns mutation-safe data chunks, and performs additional data processing under the hood for that purpose.
+
 # Server-side rendering (SSR)
 
 While rendering server-side, it can be convenient to pass pre-filled stores to the application, so that the components were rendered according to the store data:
@@ -189,4 +197,4 @@ const Item = ({id}) => {
 
 # Also
 
-- *[@axtk/store](https://github.com/axtk/store)*, the `Store` class without React hooks
+- *[@axtk/store](https://github.com/axtk/store)*, the store classes without React hooks
