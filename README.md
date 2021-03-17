@@ -87,7 +87,7 @@ The store keys can also be collected within a single enum or a constant object.
 
 ### `Store` and `ImmutableStore`
 
-These are the two classes representing stores included in this package.
+These are the two classes representing stores included in this package. Both classes have nearly identical APIs, both of them can be used interchangeably in the examples discussed here.
 
 `Store` is a lightweight store that stores data chunks as they are, and implies that data chunks that have been passed to a store or retrieved from it should be handled as read-only to avoid changes in the store state without notifying its listeners.
 
