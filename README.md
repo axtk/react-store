@@ -85,15 +85,7 @@ export const useTaskStore = useStore.bind(null, 'TaskStore');
 
 The store keys can also be collected within a single enum or a constant object.
 
-### `Store` and `ImmutableStore`
-
-These are the two classes representing stores included in this package. Both classes have nearly identical APIs, both of them can be used interchangeably in the examples discussed here.
-
-`Store` is a lightweight store that stores data chunks as they are, and implies that data chunks that have been passed to a store or retrieved from it should be handled as read-only to avoid changes in the store state without notifying its listeners.
-
-`ImmutableStore` is a less lightweight store that maintains immutability of its internal state, receives and returns mutation-safe data chunks, and performs additional data processing under the hood for that purpose.
-
-# Server-side rendering (SSR)
+## Server-side rendering (SSR)
 
 While rendering server-side, it can be convenient to pass pre-filled stores to the application, so that the components were rendered according to the store data:
 
@@ -150,7 +142,7 @@ ReactDOM.hydrate(
 delete window._prefetchedAppData;
 ```
 
-# Local stores for async and persistent state
+## Local stores for async and persistent state
 
 Since the `useStore` hook accepts standalone instances of the `Store` class (not necessarily coming from a `<StoreProvider>`), a store instance created specifically for a component can be passed to the hook to be further used as an unmount-safe and remount-persistent storage for asynchronously fetched data intended for local use.
 
@@ -195,6 +187,16 @@ const Item = ({id}) => {
 };
 ```
 
-# Also
+## `Store` and `ImmutableStore`
+
+In this package, stores are represented by these two classes. Both classes have nearly identical APIs, both of them can be used interchangeably in the examples discussed here.
+
+`Store` is a lightweight store that stores data chunks as they are in a mutable internal state, which implies that data chunks that have been passed to the store methods or retrieved from them should be handled as read-only to avoid changes in the store state without notifying its listeners.
+
+`ImmutableStore` is a less lightweight store that maintains immutability of its internal state, receives and returns mutation-safe data chunks, and performs additional data processing under the hood for that purpose.
+
+Since the `useStore` hook relies on the store's revision rather than the particular data in its state, the immutability of the store state is not a requirement for the component re-renders to happen. This allows for the use of the `Store` class in many typical cases.
+
+## Also
 
 - *[@axtk/store](https://github.com/axtk/store)*, the store classes without React hooks
