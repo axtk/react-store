@@ -20,7 +20,7 @@
     "url": "git://github.com/axtk/react-store.git"
   },
   "dependencies": {
-    "@axtk/store": "^1.3.2"
+    "@axtk/store": "^1.3.3"
   },
   "peerDependencies": {
     "react": ">16.8"
