@@ -29,8 +29,8 @@ Further on, the provided store can be retrieved by its key (or index) by means o
 import {useEffect} from 'react';
 import {useStore} from '@axtk/react-store';
 
-export default ({id}) => {
-    let taskStore = useStore('TaskStore');
+export default ({taskId}) => {
+    const taskStore = useStore('TaskStore');
     // The `useStore` hook accepts a key of a store from the
     // `<StoreProvider>` or an instance of the `Store` class.
     // The component will safely quit listening to the store updates
@@ -39,17 +39,17 @@ export default ({id}) => {
     useEffect(() => {
         // If the required data is already in the store, this effect
         // can be skipped.
-        if (taskStore.get(id)) return;
+        if (taskStore.get(taskId)) return;
 
-        fetch(`/tasks/${id}`)
+        fetch(`/tasks/${taskId}`)
             .then(res => res.json())
-            .then(data => taskStore.set(id, data));
+            .then(data => taskStore.set(taskId, data));
             // Whenever the store gets updated the `useStore`
             // hook will cause a re-render causing an update in
             // `taskData` (below) as well.
     }, [taskStore]);
 
-    let taskData = taskStore.get(id);
+    const taskData = taskStore.get(taskId);
     // If not pre-filled, `taskStore` is initially empty and `taskData`
     // is undefined until the above effect completes the request.
 
@@ -71,7 +71,19 @@ export default ({id}) => {
 
 This is essentially all of it.
 
-Although the `useStore` hook responds to updates occurring anywhere in the specific store, the workings of the React's virtual DOM reconciliation mechanism help apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage.
+Although by default the `useStore` hook responds to updates occurring anywhere in the specific store, the workings of the React's virtual DOM reconciliation mechanism help apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage.
+
+### Optional fine-tuning
+
+For more specific control over the way the `useStore` hook triggers the component re-renders, its optional second argument can be used. If it is a function, a store update will cause a re-render if its returned value changes (in terms of the value equality [in React's `useState` hook](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update)). If the second argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in a specific store). In both cases, the `useStore` hook relies on the React's render bailout mechanism that doesn't guarantee full re-render prevention, but it still should reduce the total number of re-renders.
+
+```js
+// Causing a re-render if the timestamp of the specific
+// task changes
+const taskStore = useStore('TaskStore', store => {
+    return store.get([taskId, 'timestamp']);
+});
+```
 
 ### Custom store-specific hooks
 
@@ -198,7 +210,7 @@ In this package, stores are represented by these two classes. Both classes have 
 
 `ImmutableStore` is a less lightweight store that maintains immutability of its internal state, receives and returns mutation-safe data chunks, and performs additional data processing under the hood for that purpose.
 
-Since the `useStore` hook relies on the store's revision rather than the particular data in its state, the immutability of the store state is not a requirement for the component re-renders to happen. This allows for the use of the `Store` class in many typical cases.
+Since by default the `useStore` hook relies on the store's revision rather than the particular data in its state, the immutability of the store state is not a requirement for the component re-renders to happen. This allows for the use of the `Store` class in many typical cases.
 
 &rarr; *[Store API](https://github.com/axtk/store/blob/master/README.md#store-api)*
 
