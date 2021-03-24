@@ -78,8 +78,8 @@ Although by default the `useStore` hook responds to updates occurring anywhere i
 For more specific control over the way the `useStore` hook triggers the component re-renders, its optional second argument can be used. If it is a function, a store update will cause a re-render if its returned value changes (in terms of the value equality [in React's `useState` hook](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update)). If the second argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in a specific store). In both cases, the `useStore` hook relies on the React's render bailout mechanism that doesn't guarantee full re-render prevention, but it still should reduce the total number of re-renders.
 
 ```js
-// Causing a re-render if the timestamp of the specific
-// task changes
+// In this setting, a store update will cause a re-render if
+// the timestamp of the specific task changes
 const taskStore = useStore('TaskStore', store => {
     return store.get([taskId, 'timestamp']);
 });
