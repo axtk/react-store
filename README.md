@@ -117,6 +117,8 @@ app.get('/', prefetchAppData, (req, res) => {
         </StoreProvider>
     );
 
+    // The prefetched data will be passed to the browser in a global
+    // variable that will be used to pre-fill the client-side stores.
     const serializedAppData = JSON.stringify(req.prefetchedAppData)
         .replace(/</g, '\\x3c');
 
