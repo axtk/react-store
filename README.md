@@ -99,7 +99,7 @@ The store keys can also be collected within a single enum or a constant object.
 
 ## Server-side rendering (SSR)
 
-While rendering server-side, it can be convenient to pass pre-filled stores to the application, so that the components were rendered according to the store data:
+In the server-side code, the stores can be pre-filled and passed to `<StoreProvider>` in essentially the same way as in the client-side code:
 
 ```jsx
 // ... imports
