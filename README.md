@@ -191,6 +191,7 @@ const Item = ({id}) => {
     useEffect(() => {
         // Fetching and pushing async data to itemStore.
         // ... itemStore.set(id, {data, loading: false});
+
         // If the request completes after the component has unmounted
         // the fetched data will be safely put into the store to be
         // reused when/if the component remounts.
@@ -210,7 +211,7 @@ In this package, stores are represented by these two classes. Both classes have 
 
 `ImmutableStore` is a less lightweight store that maintains immutability of its internal state, receives and returns mutation-safe data chunks, and performs additional data processing under the hood for that purpose.
 
-Since by default the `useStore` hook relies on the store's revision rather than the particular data in its state, the immutability of the store state is not a requirement for the component re-renders to happen. This allows for the use of the `Store` class in many typical cases.
+The `useStore` hook doesn't internally rely on the immutability of the store state, which allows for the use of the `Store` class in many typical cases.
 
 &rarr; *[Store API](https://github.com/axtk/store/blob/master/README.md#store-api)*
 
