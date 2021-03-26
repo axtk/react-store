@@ -213,7 +213,7 @@ In this package, stores are represented by these two classes. Both classes have 
 
 `ImmutableStore` is a less lightweight store that maintains immutability of its internal state, receives and returns mutation-safe data chunks, and performs additional data processing under the hood for that purpose.
 
-The `useStore` hook doesn't internally rely on the immutability of the store state, which allows for the use of the `Store` class in many typical cases.
+By default, the `useStore` hook doesn't internally rely on the immutability of the store state, which allows for the use of the `Store` class in many typical cases.
 
 &rarr; *[Store API](https://github.com/axtk/store/blob/master/README.md#store-api)*
 
