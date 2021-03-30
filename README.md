@@ -71,11 +71,11 @@ export default ({taskId}) => {
 
 This is essentially all of it.
 
-Although by default the `useStore` hook responds to updates occurring anywhere in the specific store, the workings of the React's virtual DOM reconciliation mechanism help apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage.
-
 ### Optional fine-tuning
 
-For more specific control over the way the `useStore` hook triggers the component re-renders, its optional second argument can be used. If the second argument is a function, a store update will cause a re-render if its returned value changes. In this case, the `useStore` hook relies on the React's [render bailout mechanism](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update) that doesn't guarantee full re-render prevention, but it still should reduce the total number of re-renders. If the second argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in a specific store).
+By default, the `useStore` hook responds to all updates in the specific store, while the workings of the React's virtual DOM reconciliation algorithm help apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage. This default setup can well be sufficient in many cases.
+
+For more specific control over the way the `useStore` hook triggers the component re-renders, its optional second argument can be used. If the second argument is a function, a store update will cause a re-render if the returned value of this function changes. To achieve this, the `useStore` hook relies on the React's [render bailout mechanism](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update) which is meant to reduce the number of re-renders. If the second argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in a specific store).
 
 ```js
 // In this setting, a store update will cause a re-render if
@@ -99,7 +99,7 @@ The store keys can also be collected within a single enum or a constant object.
 
 ## Server-side rendering (SSR)
 
-In the server-side code, the stores can be pre-filled and passed to `<StoreProvider>` in essentially the same way as in the client-side code:
+On the server, the stores can be pre-filled and passed to `<StoreProvider>` in essentially the same way as in the client-side code:
 
 ```jsx
 // ... imports
@@ -207,7 +207,7 @@ const Item = ({id}) => {
 
 ## `Store` and `ImmutableStore`
 
-In this package, stores are represented by these two classes. Both classes have nearly identical APIs, both of them can be used interchangeably in the examples discussed here.
+In this package, stores are represented by these two classes. Both classes have nearly identical APIs, and both of them can be used interchangeably in the examples discussed here.
 
 `Store` is a lightweight store that stores data chunks as they are in a mutable internal state, which implies that data chunks that have been passed to the store methods or retrieved from them should be handled as read-only to avoid changes in the store state without notifying its listeners.
 
