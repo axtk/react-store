@@ -153,8 +153,6 @@ ReactDOM.hydrate(
     </StoreProvider>,
     document.querySelector('#app')
 );
-
-delete window._prefetchedAppData;
 ```
 
 ## Local stores for async and persistent state
