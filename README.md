@@ -45,9 +45,9 @@ export default ({taskId}) => {
         fetch(`/tasks/${taskId}`)
             .then(res => res.json())
             .then(data => taskStore.set(taskId, data));
-            // Whenever the store gets updated the `useStore`
-            // hook will cause a re-render causing an update in
-            // `taskData` (below) as well.
+            // When the store gets updated the `useStore` hook will
+            // cause a re-render causing an update in `taskData`
+            // (below) as well.
     }, [taskStore]);
 
     const taskData = taskStore.get(taskId);
@@ -72,11 +72,11 @@ export default ({taskId}) => {
 
 This is essentially all of it.
 
-### Optional fine-tuning
+## Optional fine-tuning
 
 By default, the `useStore` hook responds to all updates in the specific store, while the workings of the React's virtual DOM reconciliation algorithm help apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage. This default setup can well be sufficient in many cases.
 
-For more specific control over the way the `useStore` hook triggers the component re-renders, its optional second argument can be used. If the second argument is a function, a store update will cause a re-render if the returned value of this function changes. To achieve this, the `useStore` hook relies on the React's [render bailout mechanism](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update) which is meant to reduce the number of re-renders. If the second argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in a specific store).
+For more specific control over the way the `useStore` hook triggers the component re-renders, its optional second argument can be used. If the second argument is a function, a store update will cause a re-render if the returned value of this function changes (which is achieved through the React's [render bailout mechanism](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update)). If the second argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in a specific store).
 
 ```js
 // In this setting, a store update will cause a re-render if
@@ -86,7 +86,7 @@ const taskStore = useStore('TaskStore', store => {
 });
 ```
 
-### Custom store-specific hooks
+## Custom store-specific hooks
 
 Optionally, the hooks associated with the stores available to the application can be collected in a single place to be further reused:
 
