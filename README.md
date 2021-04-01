@@ -103,10 +103,7 @@ The store keys can also be collected within a single enum or a constant object.
 On the server, the stores can be pre-filled and passed to `<StoreProvider>` in essentially the same way as in the client-side code:
 
 ```jsx
-// ... imports
-import {StoreProvider, Store} from '@axtk/react-store';
-
-// with Express
+// On the Express server
 app.get('/', prefetchAppData, (req, res) => {
     // `TaskStore` is filled with the data previously fetched and put
     // into the request `req` object in the `prefetchAppData` middleware
@@ -142,9 +139,7 @@ app.get('/', prefetchAppData, (req, res) => {
 When the application is rendered in the browser, the browser store instances can be filled with the serialized data to match the rendered state:
 
 ```jsx
-// index.js
-// ... imports
-
+// On the client
 ReactDOM.hydrate(
     <StoreProvider stores={{
         TaskStore: new Store(window._prefetchedAppData.tasks)
