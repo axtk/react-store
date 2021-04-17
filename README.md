@@ -71,8 +71,6 @@ export default ({taskId}) => {
 
 This is essentially all of it.
 
-&nbsp;
-
 ## Optional fine-tuning
 
 By default, the `useStore` hook responds to all updates in the specific store, while the workings of the React's virtual DOM reconciliation algorithm help apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage. This default setup can well be sufficient in many cases.
@@ -87,8 +85,6 @@ const taskStore = useStore('TaskStore', store => {
 });
 ```
 
-&nbsp;
-
 ## Custom store-specific hooks
 
 Optionally, the hooks associated with the stores available to the application can be collected in a single place to be further reused:
@@ -100,8 +96,6 @@ export const useTaskStore = useStore.bind(null, 'TaskStore');
 ```
 
 The store keys can also be collected within a single enum or a constant object.
-
-&nbsp;
 
 ## Server-side rendering (SSR)
 
@@ -155,8 +149,6 @@ ReactDOM.hydrate(
 );
 ```
 
-&nbsp;
-
 ## Local stores for async and persistent state
 
 Since the `useStore` hook accepts standalone instances of the `Store` class (not necessarily coming from a `<StoreProvider>`), a store instance created specifically for a component can be passed to the hook to be further used as an unmount-safe and remount-persistent storage for asynchronously fetched data intended for local use.
@@ -206,8 +198,6 @@ const Item = ({id}) => {
 };
 ```
 
-&nbsp;
-
 ## `Store` and `ImmutableStore`
 
 In this package, stores are represented by these two classes. Both classes have nearly identical APIs, and both of them can be used interchangeably in the examples discussed here.
@@ -219,8 +209,6 @@ In this package, stores are represented by these two classes. Both classes have 
 By default, the `useStore` hook doesn't internally rely on the immutability of the store state, which allows for the use of the `Store` class in many typical cases.
 
 &rarr; *[Store API](https://github.com/axtk/store/blob/master/README.md#store-api)*
-
-&nbsp;
 
 ## Also
 
