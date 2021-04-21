@@ -101,6 +101,8 @@ Further on, the provided store can be retrieved by its key (or index) by means o
 
 ```jsx
 export default ({taskId}) => {
+    // With a specific store key, the `useStore` hook will only
+    // subscribe to the corresponding store.
     const taskStore = useStore('TaskStore');
 
     // The rest of the rendering.
