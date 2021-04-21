@@ -36,6 +36,11 @@ export default ({taskId}) => {
     }, [store]);
 
     const taskData = store.get(taskId);
+    // Unless pre-filled, the store is initially empty and `taskData`
+    // is undefined until the above effect completes the request.
+
+    if (!taskData)
+        return null;
 
     return (
         <div class="task">
