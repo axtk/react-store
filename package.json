@@ -1,6 +1,6 @@
 {
   "name": "@axtk/react-store",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Compact shared-state management in React",
   "main": "dist/index.js",
   "scripts": {
