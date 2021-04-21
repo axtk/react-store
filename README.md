@@ -4,11 +4,11 @@
 
 *Compact shared-state management in vanilla React*
 
-In the process of creating a React app, the need for a state shared across multiple components may arise very soon. This package will help to set up the shared state with an easy-to-use React hook.
+This package will help to set up the state shared across multiple components with an easy-to-use React hook.
 
 ## Single-store setup
 
-The term *store* will stand for an object where the shared state will reside. Here the store is returned from the `useStore` hook. When the `useStore` hook is called in a component, the component gets subscribed to the store to remain up-to-date whenever the store gets updated.
+The term *store* will stand for an object where the shared state will reside. Here the store is returned from the `useStore` hook. When this hook is called in a component, the component gets subscribed to the store to remain up-to-date whenever the store gets updated.
 
 ```jsx
 // App.jsx
@@ -46,7 +46,9 @@ export default ({taskId}) => {
 };
 ```
 
-In this example, the data fetched in the `useEffect` hook is set to the store making this data chunk available to any component via the `useStore` hook.
+In this example, the data chunk fetched in the `useEffect` hook is set to the store making it available to any component via the `useStore` hook.
+
+In fact, this example shows that an invocation of the `useStore` hook is enough to set up the shared state in a React app. All further enhancements are optional and they can be gradually added later to fulfil other needs.
 
 ## Pre-filled store
 
@@ -70,7 +72,7 @@ ReactDOM.render(
 );
 ```
 
-Without `<StoreProvider>`, the very first call to the `useStore` hook will return an empty store.
+Without `<StoreProvider>`, the store retrieved from the `useStore` hook will be initially empty.
 
 ## Multi-store setup
 
@@ -102,18 +104,18 @@ export default ({taskId}) => {
 
 ## Custom store-specific hooks
 
-Optionally, to make the code less prone to typos, the store keys can be encapsulated in the custom store-specific hooks which will be further reused throughout the code:
+Optionally, to make the code less prone to typos, the store keys can be encapsulated in the custom store-specific hooks which can be further reused throughout the code:
 
 ```js
 import {useStore} from '@axtk/react-store';
 export const useTaskStore = () => useStore('TaskStore');
 ```
 
-The store keys can also be collected within a single enum or a constant object.
+The store keys can also be collected within a dedicated enum or a constant object.
 
 ## Optional fine-tuning
 
-For more specific control over the way the `useStore` hook triggers the component re-renders, its optional argument can be used. If the argument is a function, a store update will cause a re-render if the returned value of this function has changed (this is achieved through the React's [render bailout mechanism](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update)). If the argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in the store).
+For more specific control over the way the `useStore` hook triggers the component re-renders, its optional argument can be used. If the argument is a function, a store update will cause a re-render only if the returned value of this function has changed (this is achieved through the React's [render bailout mechanism](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update)). If the argument is set to `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in the store).
 
 ```js
 // In this setting, a store update will cause a re-render if
