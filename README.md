@@ -2,27 +2,13 @@
 
 # @axtk/react-store
 
-*Compact shared-state management in React*
+*Compact shared-state management in vanilla React*
 
-In the following code sample, an instance of the `Store` class represents a storage for data shared across multiple components. `<StoreProvider>` specifies the stores available to all nested components:
+In the process of creating a React app, the need for a state shared across multiple components may arise very soon. This package will help to set up the shared state with an easy-to-use React hook.
 
-```jsx
-// index.js
-import ReactDOM from 'react-dom';
-import {Store, StoreProvider} from '@axtk/react-store';
-import App from './App';
+## Single-store setup
 
-ReactDOM.render(
-    <StoreProvider stores={{TaskStore: new Store()}}>
-        <App/>
-    </StoreProvider>,
-    document.querySelector('#app')
-);
-```
-
-The `stores` prop accepts either a key-value map or an array of stores.
-
-Further on, the provided store can be retrieved by its key (or index) by means of the `useStore` hook:
+The term *store* will stand for an object where the shared state will reside. Here the store is returned from the `useStore` hook. When the `useStore` hook is called in a component, the component gets subscribed to the store to remain up-to-date whenever the store gets updated.
 
 ```jsx
 // App.jsx
@@ -30,72 +16,118 @@ import {useEffect} from 'react';
 import {useStore} from '@axtk/react-store';
 
 export default ({taskId}) => {
-    const taskStore = useStore('TaskStore');
-    // The `useStore` hook accepts a key of a store from the
-    // `<StoreProvider>` or an instance of the `Store` class.
+    // By calling the `useStore` hook, the component subscribes to
+    // updates occuring in the store.
+    const store = useStore();
     // The component will safely quit listening to the store updates
     // under the hood when it gets unmounted.
 
     useEffect(() => {
         // If the required data is already in the store, this effect
         // can be skipped.
-        if (taskStore.get(taskId)) return;
+        if (store.get(taskId)) return;
 
         fetch(`/tasks/${taskId}`)
             .then(res => res.json())
-            .then(data => taskStore.set(taskId, data));
-            // When the store gets updated the `useStore` hook will
-            // cause a re-render causing an update in `taskData`
-            // (below) as well.
-    }, [taskStore]);
+            .then(data => store.set(taskId, data));
+            // When the `store.set()` method is called the `useStore`
+            // hook will cause a re-render which in turn will cause
+            // an update in `taskData` (below) as well.
+    }, [store]);
 
-    const taskData = taskStore.get(taskId);
-    // If not pre-filled, `taskStore` is initially empty and `taskData`
-    // is undefined until the above effect completes the request.
-
-    if (!taskData)
-        return null;
+    const taskData = store.get(taskId);
 
     return (
-        <div className="app">
-            <div class="type">
-                Type: <strong>{taskData.type}</strong>
-            </div>
-            <div class="status">
-                Status: <strong>{taskData.status}</strong>
-            </div>
+        <div class="task">
+            <span class="label">{taskData.name}: </span>
+            <span class="value">{taskData.status}</span>
         </div>
     );
 };
 ```
 
-This is essentially all of it.
+In this example, the data fetched in the `useEffect` hook is set to the store making this data chunk available to any component via the `useStore` hook.
 
-## Optional fine-tuning
+## Pre-filled store
 
-By default, the `useStore` hook responds to all updates in the specific store, while the workings of the React's virtual DOM reconciliation algorithm help apply only necessary updates to the real DOM. Also, using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage. This default setup can well be sufficient in many cases.
+The optional `<StoreProvider>` component allows to pre-fill the store with initial data. The store specified by `<StoreProvider>` is available to all nested components through the `useStore` hook:
 
-For more specific control over the way the `useStore` hook triggers the component re-renders, its optional second argument can be used. If the second argument is a function, a store update will cause a re-render if the returned value of this function changes (which is achieved through the React's [render bailout mechanism](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update)). If the second argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in a specific store).
+```jsx
+// index.js
+import ReactDOM from 'react-dom';
+import {Store, StoreProvider} from '@axtk/react-store';
+import App from './App';
 
-```js
-// In this setting, a store update will cause a re-render if
-// the timestamp of the specific task changes
-const taskStore = useStore('TaskStore', store => {
-    return store.get([taskId, 'timestamp']);
-});
+const initialState = {
+    taskX: {name: 'Task X', status: 'succeeded'}
+};
+
+ReactDOM.render(
+    <StoreProvider value={new Store(initialState)}>
+        <App taskId="taskX"/>
+    </StoreProvider>,
+    document.querySelector('#app')
+);
+```
+
+Without `<StoreProvider>`, the very first call to the `useStore` hook will return an empty store.
+
+## Multi-store setup
+
+By default, the `useStore` hook responds to all updates in the store, while the workings of the React's virtual DOM reconciliation algorithm help apply only necessary updates to the real DOM, which provides a decent rendering optimization. Using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage.
+
+Multiple stores can be passed to the application by means of the `<StoreProvider>` component. Apart from a single store, the `value` prop accepts a key-value map or an array of stores.
+
+```jsx
+ReactDOM.render(
+    <StoreProvider value={{
+        TaskStore: new Store(),
+        UserStore: new Store()
+    }}>
+        <App/>
+    </StoreProvider>,
+    document.querySelector('#app')
+);
+```
+
+Further on, the provided store can be retrieved by its key (or index) by means of the `useStore` hook:
+
+```jsx
+export default ({taskId}) => {
+    const taskStore = useStore('TaskStore');
+
+    // The rest of the rendering.
+};
 ```
 
 ## Custom store-specific hooks
 
-Optionally, the hooks associated with the stores available to the application can be collected in a single place to be further reused:
+Optionally, to make the code less prone to typos, the store keys can be encapsulated in the custom store-specific hooks which will be further reused throughout the code:
 
 ```js
-// stores.js
 import {useStore} from '@axtk/react-store';
-export const useTaskStore = useStore.bind(null, 'TaskStore');
+export const useTaskStore = () => useStore('TaskStore');
 ```
 
 The store keys can also be collected within a single enum or a constant object.
+
+## Optional fine-tuning
+
+For more specific control over the way the `useStore` hook triggers the component re-renders, its optional argument can be used. If the argument is a function, a store update will cause a re-render if the returned value of this function has changed (this is achieved through the React's [render bailout mechanism](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update)). If the argument is `null`, the `useStore` hook won't request any re-renders (which can be useful if the component is known to never respond to updates in the store).
+
+```js
+// In this setting, a store update will cause a re-render if
+// the timestamp of the specific task changes
+const store = useStore(store => store.get([taskId, 'timestamp']));
+```
+
+In a multi-store setup, the first argument still specifies the store key, and the optional second argument controls the re-renders:
+
+```js
+const taskStore = useStore('TaskStore', store => {
+    return store.get([taskId, 'timestamp']);
+});
+```
 
 ## Server-side rendering (SSR)
 
@@ -104,18 +136,16 @@ On the server, the stores can be pre-filled and passed to `<StoreProvider>` in e
 ```jsx
 // On the Express server
 app.get('/', prefetchAppData, (req, res) => {
-    // `TaskStore` is filled with the data previously fetched and put
+    // The store is filled with the data previously fetched and put
     // into the request `req` object in the `prefetchAppData` middleware
     const html = ReactDOMServer.renderToString(
-        <StoreProvider stores={{
-            TaskStore: new Store(req.prefetchedAppData.tasks)
-        }}>
+        <StoreProvider value={new Store(req.prefetchedAppData)}>
             <App/>
         </StoreProvider>
     );
 
     // The prefetched data will be passed to the browser in a global
-    // variable that will be used to pre-fill the client-side stores.
+    // variable that will be used to pre-fill the client-side store.
     const serializedAppData = JSON.stringify(req.prefetchedAppData)
         .replace(/</g, '\\x3c');
 
@@ -135,23 +165,23 @@ app.get('/', prefetchAppData, (req, res) => {
 });
 ```
 
-When the application is rendered in the browser, the browser store instances can be filled with the serialized data to match the rendered state:
+When the application is rendered in the browser, the browser store instance can be filled with the serialized data to match the rendered state:
 
 ```jsx
 // On the client
 ReactDOM.hydrate(
-    <StoreProvider stores={{
-        TaskStore: new Store(window._prefetchedAppData.tasks)
-    }}>
+    <StoreProvider value={new Store(window._prefetchedAppData)}>
         <App/>
     </StoreProvider>,
     document.querySelector('#app')
 );
 ```
 
+On the server, the `StoreProvider`'s `value` prop can also be a single store, a key-value map of stores, or an array of stores.
+
 ## Local stores for async and persistent state
 
-Since the `useStore` hook accepts standalone instances of the `Store` class (not necessarily coming from a `<StoreProvider>`), a store instance created specifically for a component can be passed to the hook to be further used as an unmount-safe and remount-persistent storage for asynchronously fetched data intended for local use.
+Since the `useStore` hook also accepts standalone instances of the `Store` class (not necessarily coming from a `<StoreProvider>`), a store instance created specifically for a component can be passed to the hook to be further used as an unmount-safe and remount-persistent storage for asynchronously fetched data intended for local use.
 
 By saving the store state to `localStorage` in a store update handler, a store can be further enhanced to maintain state persistence across page reloads.
 

@@ -2,15 +2,29 @@ import {useState, useEffect} from 'react';
 import {useResolvedStore} from './useResolvedStore';
 import {StoreCollectionKey, ReactStore} from './types';
 
-export type WatchStore = (store: ReactStore<any>) => any;
+const watchRevision = (store: ReactStore) => store.getRevision();
 
-const watchRevision = (store: ReactStore<any>) => store.getRevision();
+export type WatchStore = (store: ReactStore) => any;
 
-export const useStore = <State>(
-    store: StoreCollectionKey | ReactStore<State>,
-    watch: WatchStore | null = watchRevision,
-): ReactStore<State> => {
-    let resolvedStore = useResolvedStore<State>(store);
+type StoreArg<T> = StoreCollectionKey | ReactStore<T> | undefined;
+type WatchArg = WatchStore | null;
+
+export function useStore<State>(watch?: WatchArg): ReactStore<State>;
+export function useStore<State>(store: StoreArg<State>, watch?: WatchArg): ReactStore<State>;
+
+export function useStore<State>(
+    store?: StoreArg<State> | WatchArg,
+    watch?: WatchArg,
+): ReactStore<State> {
+    if (typeof store === 'function' || store === null) {
+        watch = store as WatchArg;
+        store = undefined;
+    }
+
+    if (watch === undefined)
+        watch = watchRevision;
+
+    let resolvedStore = useResolvedStore<State>(store as StoreArg<State>);
     let setWatchedValue = useState(watch == null ? undefined : watch(resolvedStore))[1];
 
     useEffect(() => {
@@ -22,4 +36,4 @@ export const useStore = <State>(
     }, [resolvedStore, watch]);
 
     return resolvedStore;
-};
+}

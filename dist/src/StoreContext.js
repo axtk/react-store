@@ -1,2 +1,3 @@
 import { createContext } from 'react';
-export const StoreContext = createContext({});
+import { Store } from '@axtk/store';
+export const StoreContext = createContext([new Store()]);
