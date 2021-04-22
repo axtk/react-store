@@ -4,9 +4,11 @@
 
 *Compact shared-state management in vanilla React*
 
-This package will help to set up the state shared across multiple components with an easy-to-use React hook.
+This package provides a way to set up the state shared across multiple components with an easy-to-use React hook.
 
 ## Single-store setup
+
+The following example shows that an invocation of the `useStore` hook is enough to set up the shared state in a React app. All further enhancements covered in the subsequent sections are optional and they can be gradually added later to fulfil other needs.
 
 The term *store* will stand for an object where the shared state will reside. Here the store is returned from the `useStore` hook. When this hook is called in a component, the component gets subscribed to the store to remain up-to-date whenever the store gets updated.
 
@@ -51,9 +53,7 @@ export default ({taskId}) => {
 };
 ```
 
-In this example, the data chunk fetched in the `useEffect` hook is set to the store making it available to any component via the `useStore` hook.
-
-In fact, this example shows that an invocation of the `useStore` hook is enough to set up the shared state in a React app. All further enhancements are optional and they can be gradually added later to fulfil other needs.
+In this example, the data chunk fetched in the `useEffect` hook is set to the store making it available to any other component via the `useStore` hook, and this is essentially what the shared state is about.
 
 ## Pre-filled store
 
