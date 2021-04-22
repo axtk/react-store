@@ -25,8 +25,8 @@ export default ({taskId}) => {
     // under the hood when it gets unmounted.
 
     useEffect(() => {
-        // If the required data is already in the store, this effect
-        // can be skipped.
+        // If the required data chunk is already in the store, this
+        // effect can be skipped.
         if (store.get(taskId)) return;
 
         fetch(`/tasks/${taskId}`)
