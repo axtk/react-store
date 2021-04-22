@@ -8,7 +8,7 @@ This package provides a way to set up the state shared across multiple component
 
 ## Single-store setup
 
-The following example shows that an invocation of the `useStore` hook is enough to set up the shared state in a React app. All further enhancements covered in the subsequent sections are optional and they can be gradually added later to fulfil other needs.
+The following example shows that an invocation of the `useStore` hook introduced below is enough to set up the shared state in a React app. The enhancements covered in the subsequent sections are optional and they can be gradually added later to fulfil other related needs.
 
 The term *store* will stand for an object where the shared state will reside. Here the store is returned from the `useStore` hook. When this hook is called in a component, the component gets subscribed to the store to remain up-to-date whenever the store gets updated.
 
