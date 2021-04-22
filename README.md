@@ -55,6 +55,8 @@ export default ({taskId}) => {
 
 In this example, the data chunk fetched in the `useEffect` hook is set to the store making it available to any other component via the `useStore` hook, and this is essentially what the shared state is about.
 
+Since the `useStore` hook subscribes the component to the store updates, it is important to note that the store updates (like the `store.set()` calls) should not occur unconditionally in the same render code so as not to push the component into an infinite loop of re-renders. In typical cases, this is not really a concern since the store will need to be updated either if it doesn't contain a certain value yet (like in the example above) or in response to some external action, which implies a condition.
+
 ## Pre-filled store
 
 The optional `<StoreProvider>` component allows to pre-fill the store with initial data. The store specified by `<StoreProvider>` is available to all nested components through the `useStore` hook:
