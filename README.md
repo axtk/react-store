@@ -190,6 +190,8 @@ ReactDOM.hydrate(
 
 On the server, the `StoreProvider`'s `value` prop can also be a single store, a key-value map of stores, or an array of stores.
 
+Since the default store is imported and initialized once when the app starts, it is important to note that on the server this may cause updates of the default store to persist across requests which might be undesired. To avoid this, the server code should explicitly specify the `<StoreProvider value={...}>` component with at least an empty store. (This is not an issue on the client side, since each page load in the browser restarts the client app and the default store is re-initialized.)
+
 ## Local stores for async and persistent state
 
 Since the `useStore` hook also accepts standalone instances of the `Store` class (not necessarily coming from a `<StoreProvider>`), a store instance created specifically for a component can be passed to the hook to be further used as an unmount-safe and remount-persistent storage for asynchronously fetched data intended for local use.
