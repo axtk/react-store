@@ -8,7 +8,7 @@ This package provides a way to set up the state shared across multiple component
 
 ## Single-store setup
 
-The following example shows that an invocation of the `useStore` hook introduced below is enough to set up the shared state in a React app. The enhancements covered in the subsequent sections are optional and they can be gradually added later to fulfil other related needs.
+The following example shows that a call to the `useStore` hook introduced below is enough to set up the shared state in a React app. The enhancements covered in the subsequent sections are optional and they can be gradually added later to fulfil other related needs.
 
 The term *store* will stand for an object where the shared state will reside. Here the store is returned from the `useStore` hook. When this hook is called in a component, the component gets subscribed to the store to remain up-to-date whenever the store gets updated.
 
@@ -79,7 +79,7 @@ ReactDOM.render(
 );
 ```
 
-Without `<StoreProvider>`, the store retrieved from the `useStore` hook will be initially empty.
+Without `<StoreProvider>`, an initially empty default store is created under the hood. (This allows for the *zero-config setup* where the default shared store can be accessed right away from the `useStore` hook without manually creating a store.)
 
 ## Multi-store setup
 
@@ -190,7 +190,7 @@ ReactDOM.hydrate(
 
 On the server, the `StoreProvider`'s `value` prop can also be a single store, a key-value map of stores, or an array of stores.
 
-Since the default store is imported and initialized once when the app starts, it is important to note that on the server this may cause updates of the default store to persist across requests which might be undesired. To avoid this, the server code should explicitly specify the `<StoreProvider value={...}>` component with at least an empty store. (This is not an issue on the client side, since each page load in the browser restarts the client app and the default store is re-initialized.)
+Since the default store in the setting without `<StoreProvider>` is imported and initialized once when the app starts, it is important to note that on the server this may cause updates of the default store to persist across requests which might be undesired. To avoid this, the server code should explicitly specify the `<StoreProvider>` component with at least an empty store in its `value` prop. (This is not an issue on the client side, since each page load in the browser restarts the client app and the default store is re-initialized.)
 
 ## Local stores for async and persistent state
 
