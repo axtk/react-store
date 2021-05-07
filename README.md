@@ -196,42 +196,23 @@ Since the default store in the setting *without* `<StoreProvider>` is imported a
 
 Since the `useStore` hook also accepts standalone instances of the `Store` class (not necessarily coming from a `<StoreProvider>`), a store instance created specifically for a component can be passed to the hook to be further used as an unmount-safe and remount-persistent storage for asynchronously fetched data intended for local use.
 
-By saving the store state to `localStorage` in a store update handler, a store can be further enhanced to maintain state persistence across page reloads.
-
 ```jsx
 // A locally created store can act as a kind of the component's local
-// state persistent across unmounts and remounts.
+// state persistent across remounts.
 const itemStore = new Store();
 
 const Item = ({id}) => {
     useStore(itemStore);
 
-    // Saving the store state to localStorage makes the component's
-    // state persistent across page reloads.
     useEffect(() => {
-        try {
-            let state = JSON.parse(localStorage.getItem('items'));
-            if (state != null) itemStore.setState(state);
-        }
-        catch(e) {}
+        if (itemStore.get(id)) return;
 
-        // (The `onUpdate` method returns an unsubscription function
-        // enabling the `useEffect` hook to complete its lifecycle.)
-        return itemStore.onUpdate(() => {
-            try {
-                let value = JSON.stringify(itemStore.getState());
-                localStorage.setItem('items', value);
-            }
-            catch(e) {}
-        });
-    }, [itemStore]);
-
-    useEffect(() => {
-        // Fetching and pushing async data to itemStore.
-        // ... itemStore.set(id, {data, loading: false});
-
+        // Fetching and pushing async data to `itemStore`.
+        fetch(`/tasks/${id}`)
+            .then(res => res.json())
+            .then(data => itemStore.set(id, {data, loading: false}));
         // If the request completes after the component has unmounted
-        // the fetched data will be safely put into the store to be
+        // the fetched data will be safely put into `itemStore` to be
         // reused when/if the component remounts.
     }, [itemStore]);
 
@@ -239,6 +220,30 @@ const Item = ({id}) => {
 
     // Rendering the item.
 };
+```
+
+In addition to the state persistence across component remounts, the store can be further enhanced to maintain state persistence across page reloads by saving the store state to `localStorage` in the store update handler.
+
+```jsx
+// The following effect can be inserted in the example above to make
+// the component state persistent across page reloads.
+useEffect(() => {
+    try {
+        let state = JSON.parse(localStorage.getItem('items'));
+        if (state != null) itemStore.setState(state);
+    }
+    catch(e) {}
+
+    // (The `onUpdate` method returns an unsubscription function
+    // enabling the `useEffect` hook to complete its lifecycle.)
+    return itemStore.onUpdate(() => {
+        try {
+            let value = JSON.stringify(itemStore.getState());
+            localStorage.setItem('items', value);
+        }
+        catch(e) {}
+    });
+}, [itemStore]);
 ```
 
 ## `Store` and `ImmutableStore`
