@@ -207,13 +207,19 @@ const Item = ({id}) => {
     useEffect(() => {
         if (itemStore.get(id)) return;
 
+        itemStore.set(id, {loading: true});
+
         // Fetching and pushing async data to `itemStore`.
         fetch(`/tasks/${id}`)
             .then(res => res.json())
             .then(data => itemStore.set(id, {data, loading: false}));
+
         // If the request completes after the component has unmounted
         // the fetched data will be safely put into `itemStore` to be
         // reused when/if the component remounts.
+
+        // (Out of scope of this example, but the effect can certainly
+        // be extended with the request error handling.)
     }, [itemStore]);
 
     let {data, loading} = itemStore.get(id);
