@@ -10,7 +10,7 @@ This package provides a way to set up the state shared across multiple component
 
 The following example shows that a call to the `useStore` hook introduced below is enough to set up the shared state in a React app. The enhancements covered in the subsequent sections are optional and they can be gradually added later to fulfil other related needs.
 
-The term *store* will stand for an object where the shared state will reside. Here the store is returned from the `useStore` hook. When this hook is called in a component, the component gets subscribed to the store to remain up-to-date whenever the store gets updated.
+The term *store* will stand for an object where the shared state will reside. A call to the `useStore` hook returns the store and subscribes the component to the store to bring it up-to-date whenever the store gets updated.
 
 ```jsx
 // App.jsx
@@ -53,9 +53,9 @@ export default ({taskId}) => {
 };
 ```
 
-In this example, the data chunk fetched in the `useEffect` hook is set to the store making it available to any other component via the `useStore` hook, and this is essentially what the shared state is about.
+In this example, the data chunk fetched within the `useEffect` hook is set to the store making it available to any other component via the `useStore` hook, and this is essentially what the shared state is about.
 
-Since the `useStore` hook subscribes the component to the store updates, it is important to note that the store updates (like the `store.set()` calls) should not occur unconditionally in the same render code so as not to push the component into an infinite loop of re-renders. In typical cases, this is not really a concern since the store will need to be updated either if it doesn't contain a certain value yet (like in the example above) or in response to some external action, which implies a condition.
+Since the `useStore` hook subscribes the component to the store updates, it is important to note that the store updates (like the `store.set()` calls) should not occur *unconditionally* in the same render code so as not to push the component into an infinite loop of re-renders. In typical cases, this is not really a concern since the store will need to be updated either if it doesn't contain a certain value yet (like in the example above) or in response to some external action, which implies a condition.
 
 ## Pre-filled store
 
@@ -83,7 +83,7 @@ Without `<StoreProvider>`, an initially empty default store is created under the
 
 ## Multi-store setup
 
-By default, the `useStore` hook responds to all updates in the store, while the workings of the React's virtual DOM reconciliation algorithm help apply only necessary updates to the real DOM, which provides a decent rendering optimization. Using multiple stores in complex applications, apart from providing the semantic separation of concerns, helps avoid receiving irrelevant updates in the components at an even earlier stage.
+By default, the `useStore` hook responds to all updates in the store, while the workings of the React's virtual DOM reconciliation algorithm help apply only necessary updates to the real DOM, which provides a decent rendering optimization. Using multiple stores in complex applications, apart from providing the semantic separation of data, helps avoid receiving irrelevant updates in the components at an even earlier stage.
 
 Multiple stores can be passed to the application by means of the `<StoreProvider>` component. Apart from a single store, the `value` prop accepts a key-value map or an array of stores.
 
@@ -190,7 +190,7 @@ ReactDOM.hydrate(
 
 On the server, the `StoreProvider`'s `value` prop can also be a single store, a key-value map of stores, or an array of stores.
 
-Since the default store in the setting without `<StoreProvider>` is imported and initialized once when the app starts, it is important to note that on the server this may cause updates of the default store to persist across requests which might be undesired. To avoid this, the server code should explicitly specify the `<StoreProvider>` component with at least an empty store in its `value` prop. (This is not an issue on the client side, since each page load in the browser restarts the client app and the default store is re-initialized.)
+Since the default store in the setting *without* `<StoreProvider>` is imported and initialized once when the app starts, on the server this may cause updates of the default store to persist across requests which might be undesired. To avoid this, the server code should explicitly specify store instances with the `<StoreProvider>` component for each request (as in the example above). (This is not an issue on the client side, since each page load in the browser restarts the client app and the default store is re-initialized.)
 
 ## Local stores for async and persistent state
 
@@ -243,7 +243,7 @@ const Item = ({id}) => {
 
 ## `Store` and `ImmutableStore`
 
-In this package, stores are represented by these two classes. Both classes have nearly identical APIs, and both of them can be used interchangeably in the examples discussed here.
+In this package, stores are represented by two classes: `Store` and `ImmutableStore`. Both classes have nearly identical APIs, and both of them can be used interchangeably in the examples discussed here.
 
 `Store` is a lightweight store that stores data chunks as they are in a mutable internal state, which implies that data chunks that have been passed to the store methods or retrieved from them should be handled as read-only to avoid changes in the store state without notifying its listeners.
 
