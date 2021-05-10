@@ -165,8 +165,8 @@ By default, each store update will request a re-render of the subscribed compone
 
 ```js
 const store = useStore(store => store.get([taskId, 'timestamp']));
-// In this example, a store update will cause a re-render if the
-// timestamp of the specific task changes.
+// In this example, a store update won't request a re-render if the
+// timestamp of the specific task hasn't changed.
 ```
 
 ```js
