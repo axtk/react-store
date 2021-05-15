@@ -177,7 +177,7 @@ export default Item;
 
 ## Fine-tuning re-renders
 
-By default, each store update will request a re-render of the subscribed component, which is then optimized by the React's virtual DOM reconciliation algorithm before affecting the real DOM. The function passed to the `useStore` hook can prevent the component from a re-render at an earlier stage if its returned value hasn't changed.
+By default, each store update will request a re-render of the component subscribed to the particular store, which is then optimized by the React's virtual DOM reconciliation algorithm before affecting the real DOM (and this can be sufficient in many cases). The function passed to the `useStore` hook can prevent the component from a particular re-render at an even earlier stage if its returned value hasn't changed.
 
 ```js
 const store = useStore(store => store.get([taskId, 'timestamp']));
