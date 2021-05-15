@@ -146,14 +146,30 @@ ReactDOM.hydrate(
 A component-scoped store can act as a local state persistent across remounts and as an unmount-safe storage for async data.
 
 ```jsx
-import ReactDOM from 'react-dom';
+import {useEffect} from 'react';
 import {useStore, Store} from '@axtk/react-store';
 
 const itemStore = new Store();
 
-const Item = () => {
+const Item = ({id}) => {
     useStore(itemStore);
-    // ...
+
+    useEffect(() => {
+        if (itemStore.get(id)) return;
+
+        itemStore.set(id, {loading: true});
+
+        fetch(`/items/${id}`)
+            .then(res => res.json())
+            .then(data => itemStore.set(id, {data, loading: false}));
+        // If the request completes after the component has unmounted
+        // the fetched data will be safely put into `itemStore` to be
+        // reused when/if the component remounts.
+    }, [itemStore]);
+
+    let {data, loading} = itemStore.get(id) || {};
+
+    // Rendering
 };
 
 export default Item;
