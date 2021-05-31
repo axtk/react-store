@@ -6,7 +6,7 @@
 
 ## Zero-config setup
 
-The term *store* will stand for an object where the shared state will reside. A call to the `useStore` hook returns a store and subscribes the component to the store to bring it up-to-date whenever the store gets updated.
+The `useStore` hook introduced in this package returns a store, which will contain the shared state, and subscribes the component to the store to bring it up-to-date whenever the store gets updated.
 
 The `useStore` hook returns the default store if no store has been explicitly provided.
 
