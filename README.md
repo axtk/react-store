@@ -37,6 +37,8 @@ const App = () => <div><Button/> <Display/></div>;
 ReactDOM.render(<App/>, document.querySelector('#app'));
 ```
 
+The store returned from the `useStore` hook is an instance of the `Store` class which exposes a number of [methods](https://github.com/axtk/store/blob/master/README.md#store-api) to manipulate the data it contains.
+
 ## Single-store setup
 
 The store can be set up explicitly with the `<StoreProvider>` component.
@@ -198,18 +200,6 @@ const taskStore = useStore('TaskStore', store => {
     return store.get([taskId, 'timestamp']);
 });
 ```
-
-## `Store` and `ImmutableStore`
-
-In this package, stores are represented by two classes: `Store` and `ImmutableStore`. Both classes have nearly identical APIs, and both of them can be used interchangeably in the examples discussed here.
-
-`Store` is a lightweight store that stores data chunks as they are in a mutable internal state, which implies that data chunks that have been passed to the store methods or retrieved from them should be handled as read-only to avoid changes in the store state without notifying its listeners.
-
-`ImmutableStore` is a less lightweight store that maintains immutability of its internal state, receives and returns mutation-safe data chunks, and performs additional data processing under the hood for that purpose.
-
-By default, the `useStore` hook doesn't internally rely on the immutability of the store state, which allows for the use of the `Store` class in many typical cases.
-
-&rarr; *[Store API](https://github.com/axtk/store/blob/master/README.md#store-api)*
 
 ## Also
 
