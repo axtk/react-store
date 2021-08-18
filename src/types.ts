@@ -1,5 +1,5 @@
-import type {Store, ImmutableStore} from '@axtk/store';
+import type {Store} from '@axtk/store';
 
-export type ReactStore<State = unknown> = Store<State> | ImmutableStore<State>;
 export type StoreCollectionKey = string | number;
-export type StoreCollection = ReactStore[] | {[index: string]: ReactStore};
+export type StoreCollection = Store[] | {[key: string]: Store};
+export type StoreRef = StoreCollectionKey | Store | undefined;

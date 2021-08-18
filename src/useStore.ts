@@ -1,39 +1,37 @@
 import {useState, useEffect} from 'react';
+import type {Store} from '@axtk/store';
 import {useResolvedStore} from './useResolvedStore';
-import {StoreCollectionKey, ReactStore} from './types';
+import type {StoreRef} from './types';
 
-const watchRevision = (store: ReactStore) => store.getRevision();
+const getRevision = (store: Store) => store.getRevision();
 
-export type WatchStore = (store: ReactStore) => any;
+export type GetUpdateMarker = ((store: Store) => any) | null;
 
-type StoreArg<T> = StoreCollectionKey | ReactStore<T> | undefined;
-type WatchArg = WatchStore | null;
+export function useStore(getUpdateMarker?: GetUpdateMarker): Store;
+export function useStore(store: StoreRef, getUpdateMarker?: GetUpdateMarker): Store;
 
-export function useStore<State>(watch?: WatchArg): ReactStore<State>;
-export function useStore<State>(store: StoreArg<State>, watch?: WatchArg): ReactStore<State>;
-
-export function useStore<State>(
-    store?: StoreArg<State> | WatchArg,
-    watch?: WatchArg,
-): ReactStore<State> {
+export function useStore(
+    store?: StoreRef | GetUpdateMarker,
+    getUpdateMarker?: GetUpdateMarker,
+): Store {
     if (typeof store === 'function' || store === null) {
-        watch = store as WatchArg;
+        getUpdateMarker = store as GetUpdateMarker;
         store = undefined;
     }
 
-    if (watch === undefined)
-        watch = watchRevision;
+    if (getUpdateMarker === undefined)
+        getUpdateMarker = getRevision;
 
-    let resolvedStore = useResolvedStore<State>(store as StoreArg<State>);
-    let setWatchedValue = useState(watch == null ? undefined : watch(resolvedStore))[1];
+    let resolvedStore = useResolvedStore(store as StoreRef);
+    let setUpdateMarker = useState(getUpdateMarker == null ? undefined : getUpdateMarker(resolvedStore))[1];
 
     useEffect(() => {
-        if (watch != null) {
+        if (getUpdateMarker != null) {
             return resolvedStore.onUpdate(() => {
-                setWatchedValue(watch(resolvedStore));
+                setUpdateMarker(getUpdateMarker(resolvedStore));
             });
         }
-    }, [resolvedStore, watch]);
+    }, [resolvedStore, getUpdateMarker]);
 
     return resolvedStore;
 }

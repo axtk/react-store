@@ -1,30 +1,27 @@
 import {useContext} from 'react';
-import {AbstractStore} from '@axtk/store';
+import {Store} from '@axtk/store';
 import {StoreContext} from './StoreContext';
-import {StoreCollectionKey, ReactStore} from './types';
+import type {StoreRef, StoreCollectionKey} from './types';
 
 const DEFAULT_STORE_KEY = 0;
-const isStore = (x: any) => x instanceof AbstractStore;
 
-export const useResolvedStore = <State>(
-    store: StoreCollectionKey | ReactStore<State> | undefined
-): ReactStore<State> => {
+export function useResolvedStore(store: StoreRef): Store {
     let contextStores = useContext(StoreContext);
-    let resolvedStore: ReactStore<State>;
+    let resolvedStore: Store;
 
-    if (isStore(store))
-        resolvedStore = store as ReactStore<State>;
+    if (store instanceof Store)
+        resolvedStore = store;
     else {
         if (!contextStores)
             throw new Error('No stores in the store context.');
 
-        let storeKey = (store || DEFAULT_STORE_KEY) as StoreCollectionKey;
+        let storeKey = store || DEFAULT_STORE_KEY;
 
-        if (!isStore(contextStores[storeKey]))
+        if (!(contextStores[storeKey] instanceof Store))
             throw new Error(`Not a store: ${storeKey}`);
 
         resolvedStore = contextStores[storeKey];
     }
 
     return resolvedStore;
-};
+}

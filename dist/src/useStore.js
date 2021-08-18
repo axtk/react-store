@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useResolvedStore } from './useResolvedStore';
-const watchRevision = (store) => store.getRevision();
-export function useStore(store, watch) {
+const getRevision = (store) => store.getRevision();
+export function useStore(store, getUpdateMarker) {
     if (typeof store === 'function' || store === null) {
-        watch = store;
+        getUpdateMarker = store;
         store = undefined;
     }
-    if (watch === undefined)
-        watch = watchRevision;
+    if (getUpdateMarker === undefined)
+        getUpdateMarker = getRevision;
     let resolvedStore = useResolvedStore(store);
-    let setWatchedValue = useState(watch == null ? undefined : watch(resolvedStore))[1];
+    let setUpdateMarker = useState(getUpdateMarker == null ? undefined : getUpdateMarker(resolvedStore))[1];
     useEffect(() => {
-        if (watch != null) {
+        if (getUpdateMarker != null) {
             return resolvedStore.onUpdate(() => {
-                setWatchedValue(watch(resolvedStore));
+                setUpdateMarker(getUpdateMarker(resolvedStore));
             });
         }
-    }, [resolvedStore, watch]);
+    }, [resolvedStore, getUpdateMarker]);
     return resolvedStore;
 }

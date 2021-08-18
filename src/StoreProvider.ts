@@ -1,14 +1,14 @@
 import {createElement, FC} from 'react';
-import {AbstractStore} from '@axtk/store';
+import {Store} from '@axtk/store';
 import {StoreContext} from './StoreContext';
-import type {ReactStore, StoreCollection} from './types';
+import type {StoreCollection} from './types';
 
 export type StoreProviderProps = {
-    value: ReactStore | StoreCollection;
-}
+    value: Store | StoreCollection;
+};
 
 export const StoreProvider: FC<StoreProviderProps> = ({value, children}) => {
-    if (value instanceof AbstractStore)
-        value = [value as ReactStore];
-    return createElement(StoreContext.Provider, {value: value as StoreCollection}, children);
+    return createElement(StoreContext.Provider, {
+        value: value instanceof Store ? [value] : value,
+    }, children);
 };
