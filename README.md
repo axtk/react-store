@@ -2,7 +2,9 @@
 
 # @axtk/react-store
 
-*Compact shared-state management in vanilla React*
+*Compact shared-state management in React*
+
+Taking inspiration from the easiness of using local state with the `useState` hook.
 
 ## Zero-config setup
 
