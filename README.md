@@ -6,9 +6,9 @@
 
 Taking inspiration from the easiness of using local state with the `useState` hook.
 
-## Zero-config setup
+## Default setup
 
-The `useStore` hook introduced in this package returns a store, which will contain the shared state, and subscribes the component to the store to bring it up-to-date whenever the store gets updated.
+The `useStore` hook introduced in this package returns a store that will contain the shared state and subscribes the component to this store to bring it up-to-date whenever the store gets updated.
 
 The `useStore` hook returns the default store if no store has been explicitly provided.
 
@@ -43,7 +43,7 @@ The store returned from the `useStore` hook is an instance of the `Store` class 
 
 ## Single-store setup
 
-The store can be set up explicitly with the `<StoreProvider>` component.
+The store can be set up explicitly with the `<StoreProvider>` component. It can be useful if it is necessary to add initial values to the store. In the following example, the store constructor receives the initial state.
 
 ```jsx
 import ReactDOM from 'react-dom';
@@ -67,10 +67,8 @@ const Display = () => {
 
 const App = () => <div><Button/> <Display/></div>;
 
-const initialState = {n: 42};
-
 ReactDOM.render(
-    <StoreProvider value={new Store(initialState)}>
+    <StoreProvider value={new Store({n: 42})}>
         <App/>
     </StoreProvider>,
     document.querySelector('#app')

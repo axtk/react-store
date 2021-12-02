@@ -2,4 +2,10 @@ import {createContext} from 'react';
 import {Store} from '@axtk/store';
 import type {StoreCollection} from './types';
 
-export const StoreContext = createContext<StoreCollection>([new Store()]);
+function createStoreCollectionContext<S extends object, N extends number>(
+    value: StoreCollection<S, N>,
+) {
+    return createContext(value);
+}
+
+export const StoreContext = createStoreCollectionContext([new Store()]);
