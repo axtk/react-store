@@ -1,7 +1,7 @@
 import type {Store} from '@axtk/store';
 
-export type StoreCollection<S extends object, N extends number> =
-    Store<S, N>[] | Record<PropertyKey, Store<S, N>>;
+export type StoreRef<State extends object, TypedKeyPathDepth extends number = 5> =
+    PropertyKey | Store<State, TypedKeyPathDepth> | undefined;
 
-export type StoreRef<S extends object, N extends number> =
-    PropertyKey | Store<S, N> | undefined;
+export type StoreCollection<S extends object, D extends number = 5> =
+    Store<S, D>[] | Record<PropertyKey, Store<S, D>>;

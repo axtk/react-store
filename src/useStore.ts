@@ -3,24 +3,24 @@ import {Store} from '@axtk/store';
 import {StoreContext} from './StoreContext';
 import type {StoreRef} from './types';
 
-const getRevision = <S extends object, N extends number>(store: Store<S, N>) => store.getRevision();
+const getRevision = <S extends object, D extends number = 5>(store: Store<S, D>) => store.getRevision();
 
-export type GetUpdateTrigger<S extends object, N extends number> =
-    ((store: Store<S, N>) => any) | null;
+export type GetUpdateTrigger<S extends object, D extends number = 5> =
+    ((store: Store<S, D>) => any) | null;
 
-export function useStore<S extends object, N extends number>(
-    store?: StoreRef<S, N>,
-    getUpdateTrigger?: GetUpdateTrigger<S, N>,
-): Store<S, N>;
+export function useStore<S extends object, D extends number = 5>(
+    store?: StoreRef<S, D>,
+    getUpdateTrigger?: GetUpdateTrigger<S, D>,
+): Store<S, D>;
 
-export function useStore<S extends object, N extends number>(
-    getUpdateTrigger?: GetUpdateTrigger<S, N>,
-): Store<S, N>;
+export function useStore<S extends object, D extends number = 5>(
+    getUpdateTrigger?: GetUpdateTrigger<S, D>,
+): Store<S, D>;
 
-export function useStore<S extends object, N extends number>(
-    store?: StoreRef<S, N> | GetUpdateTrigger<S, N>,
-    getUpdateTrigger?: GetUpdateTrigger<S, N>,
-): Store<S, N> {
+export function useStore<S extends object, D extends number = 5>(
+    store?: StoreRef<S, D> | GetUpdateTrigger<S, D>,
+    getUpdateTrigger?: GetUpdateTrigger<S, D>,
+): Store<S, D> {
     let contextStores = useContext(StoreContext);
 
     // Since the first argument can be a store, or a store key in
@@ -34,7 +34,7 @@ export function useStore<S extends object, N extends number>(
     // Checking for the hook's signature that doesn't specify a store
     // and provides a custom `getUpdateTrigger` function.
     else if (typeof store === 'function' || store === null) {
-        getUpdateTrigger = store as GetUpdateTrigger<S, N>;
+        getUpdateTrigger = store as GetUpdateTrigger<S, D>;
         storeKey = 0;
     }
     else storeKey = store;
