@@ -6,54 +6,37 @@
 
 Taking inspiration from the easiness of using local state with the `useState` hook.
 
-## Default setup
+## Usage example
 
-The `useStore` hook introduced in this package returns a store that will contain the shared state and subscribes the component to this store to bring it up-to-date whenever the store gets updated.
-
-The `useStore` hook returns the default store if no store has been explicitly provided.
+This package provides the `Store` class and the `useStoreListener` hook. The `Store` class is a container for shared data that allows for subscription to its updates, and the `useStoreListener` hook makes these subscriptions from within React components. The sharing of the stores across components is performed by means of React's Context in a pretty straightforward manner, as shown in the example below.
 
 ```jsx
+import {createContext, useContext} from 'react';
 import ReactDOM from 'react-dom';
-import {useStore} from '@axtk/react-store';
+import {Store, useStoreListener} from '@axtk/react-store';
 
-const Button = () => {
+// Creating a React's Context for the store that will be furnished
+// with a store in a `StoreContext.Provider` component below.
+const StoreContext = createContext();
+
+// Wrapping up a hook that picks the store from the Context
+// and makes a subscription to the store updates.
+const useStore = () => {
+    const store = useContext(StoreContext);
+    useStoreListener(store);
+    return store;
+};
+
+// Both `IncrementButton` and `Display` below subscribe to the same
+// store and thus share the value of `n` contained in the store.
+
+const IncrementButton = () => {
     const store = useStore();
 
     return (
         <button onClick={
-            () => store.set('n', (store.get('n') || 0) + 1)
+            () => store.set('n', store.get('n') + 1)
         }>
-            Increment
-        </button>
-    );
-};
-
-const Display = () => {
-    const store = useStore();
-
-    return <span>{store.get('n') || 0}</span>;
-};
-
-const App = () => <div><Button/> <Display/></div>;
-
-ReactDOM.render(<App/>, document.querySelector('#app'));
-```
-
-The store returned from the `useStore` hook is an instance of the `Store` class which exposes a number of [methods](https://github.com/axtk/store/blob/master/README.md#store-api) to manipulate the data it contains.
-
-## Single-store setup
-
-The store can be set up explicitly with the `<StoreProvider>` component. It can be useful if it is necessary to add initial values to the store. In the following example, the store constructor receives the initial state.
-
-```jsx
-import ReactDOM from 'react-dom';
-import {useStore, Store, StoreProvider} from '@axtk/react-store';
-
-const Button = () => {
-    const store = useStore();
-
-    return (
-        <button onClick={() => store.set('n', store.get('n') + 1)}>
             Increment
         </button>
     );
@@ -65,51 +48,73 @@ const Display = () => {
     return <span>{store.get('n')}</span>;
 };
 
-const App = () => <div><Button/> <Display/></div>;
+const App = () => <div><IncrementButton/> <Display/></div>;
 
 ReactDOM.render(
-    <StoreProvider value={new Store({n: 42})}>
+    // Initializing the store context with a store.
+    // The constructor of the Store class accepts an (optional)
+    // initial state.
+    <StoreContext.Provider value={new Store({n: 42})}>
         <App/>
-    </StoreProvider>,
+    </StoreContext.Provider>,
     document.querySelector('#app')
 );
 ```
 
+This example covers much of what is needed to deal with a store in a React app, although there are in fact another couple of [methods](https://github.com/axtk/store/blob/master/README.md#store-api) in the Store API.
+
+From the context's perspective, the store as a data container never changes after it has been initialized concealing its updates under the hood. All interactions with the shared context data are left to the store itself, without the need to come up with additional utility functions to mutate the data in order to trigger a component update.
+
 ## Multi-store setup
 
-Multiple stores can be passed to the `StoreProvider`'s `value` prop and retrieved via the `useStore` hook with the store key as a parameter.
+The shape of a React's context can be virtually anything. It means a single context can accommodate several stores. The task is still to pick the store from the context and to subscribe to its updates by means of the `useStoreListener` hook.
+
+Having multiple stores can help to convey the semantic separation of data in the application and to avoid component subscriptions to updates of irrelevant chunks of data.
 
 ```jsx
+import {createContext, useContext} from 'react';
 import ReactDOM from 'react-dom';
-import {useStore, Store, StoreProvider} from '@axtk/react-store';
+import {Store, useStoreListener} from '@axtk/react-store';
+
+const StoreContext = createContext({});
+
+const useTaskStore = () => {
+    const {taskStore} = useContext(StoreContext);
+    useStoreListener(taskStore);
+    return taskStore;
+};
+
+const Task = ({id}) => {
+    const taskStore = useTaskStore();
+    // ...
+};
 
 const App = () => {
-    const taskStore = useStore('TaskStore');
     // ...
 };
 
 ReactDOM.render(
-    <StoreProvider value={{
-        TaskStore: new Store(),
-        UserStore: new Store()
+    <StoreContext.Provider value={{
+        taskStore: new Store(),
+        userStore: new Store()
     }}>
         <App/>
-    </StoreProvider>,
+    </StoreContext.Provider>,
     document.querySelector('#app')
 );
 ```
 
 ## Server-side rendering (SSR)
 
-On the server, the stores can be pre-filled and passed to `<StoreProvider>` in essentially the same way as in the client-side code.
+On the server, the stores can be pre-filled and passed to a React's Context in essentially the same way as in the client-side code.
 
 ```jsx
 // On an Express server
 app.get('/', prefetchAppData, (req, res) => {
     const html = ReactDOMServer.renderToString(
-        <StoreProvider value={new Store(req.prefetchedAppData)}>
+        <StoreContext.Provider value={new Store(req.prefetchedAppData)}>
             <App/>
-        </StoreProvider>
+        </StoreContext.Provider>
     );
 
     const serializedAppData = JSON.stringify(req.prefetchedAppData)
@@ -136,9 +141,9 @@ When the application is rendered in the browser, the browser store instance can 
 ```jsx
 // On the client
 ReactDOM.hydrate(
-    <StoreProvider value={new Store(window._prefetchedAppData)}>
+    <StoreContext.Provider value={new Store(window._prefetchedAppData)}>
         <App/>
-    </StoreProvider>,
+    </StoreContext.Provider>,
     document.querySelector('#app')
 );
 ```
@@ -149,12 +154,12 @@ A component-scoped store can act as a local state persistent across remounts and
 
 ```jsx
 import {useEffect} from 'react';
-import {useStore, Store} from '@axtk/react-store';
+import {Store, useStoreListener} from '@axtk/react-store';
 
 const itemStore = new Store();
 
 const Item = ({id}) => {
-    useStore(itemStore);
+    useStoreListener(itemStore);
 
     useEffect(() => {
         if (itemStore.get(id)) return;
@@ -167,6 +172,10 @@ const Item = ({id}) => {
         // If the request completes after the component has unmounted
         // the fetched data will be safely put into `itemStore` to be
         // reused when/if the component remounts.
+
+        // Data fetching error handling was not added to this example
+        // only for the sake of focusing on the interaction with the
+        // store.
     }, [itemStore]);
 
     let {data, loading} = itemStore.get(id) || {};
@@ -177,30 +186,35 @@ const Item = ({id}) => {
 export default Item;
 ```
 
-## Fine-tuning re-renders
+## Optional fine-tuning
 
-By default, each store update will request a re-render of the component subscribed to the particular store, which is then optimized by the React's virtual DOM reconciliation algorithm before affecting the real DOM (and this can be sufficient in many cases). The function passed to the `useStore` hook can prevent the component from a particular re-render at an even earlier stage if its returned value hasn't changed.
+By default, each store update will request a re-render of the component subscribed to the particular store, which is then optimized by React under the hood with its virtual DOM reconciliation algorithm before affecting the real DOM (and this can be sufficient in many cases). The function passed to the `useStoreListener` hook as the optional second parameter can prevent the component from a particular re-render at an even earlier stage if its returned value hasn't changed.
 
 ```js
-const store = useStore(store => store.get([taskId, 'timestamp']));
+useStoreListener(store, store => store.get([taskId, 'timestamp']));
 // In this example, a store update won't request a re-render if the
 // timestamp of the specific task hasn't changed.
 ```
 
 ```js
-const store = useStore(null);
-// With `null` as an argument, the store updates won't cause any
-// component re-renders.
+useStoreListener(store, null);
+// With `null` as the second argument, the store updates won't cause
+// any component re-renders.
 ```
 
+The optional third parameter allows to specify the value equality function used to figure out whether the update trigger value has changed. By default, it is `Object.is`.
+
 ```js
-// In a multi-store setup, the first argument still specifies the store
-// key, and the optional second argument controls the re-renders.
-const taskStore = useStore('TaskStore', store => {
-    return store.get([taskId, 'timestamp']);
-});
+useStoreListener(
+    store,
+    store => store.get([taskId, 'timestamp']),
+    (prev, next) => next - prev < 1000
+);
+// In this example, a store update won't request a re-render if the
+// timestamp of the specific task has increased by less than a
+// second compared to the previous timestamp value.
 ```
 
 ## Also
 
-- *[@axtk/store](https://github.com/axtk/store)*, the store classes without React
+- *[@axtk/store](https://github.com/axtk/store)*, the `Store` class without React
