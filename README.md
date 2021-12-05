@@ -15,8 +15,8 @@ import {createContext, useContext} from 'react';
 import ReactDOM from 'react-dom';
 import {Store, useStoreListener} from '@axtk/react-store';
 
-// Creating a React's Context for the store that will be furnished
-// with a store in a `StoreContext.Provider` component below.
+// Creating a React Context that will be furnished with a
+// store in a `StoreContext.Provider` component below.
 const StoreContext = createContext();
 
 // Wrapping up a hook that picks the store from the Context
@@ -51,7 +51,7 @@ const Display = () => {
 const App = () => <div><IncrementButton/> <Display/></div>;
 
 ReactDOM.render(
-    // Initializing the store context with a store.
+    // Initializing the context with a store.
     // The constructor of the Store class accepts an (optional)
     // initial state.
     <StoreContext.Provider value={new Store({n: 42})}>
@@ -106,7 +106,7 @@ ReactDOM.render(
 
 ## Server-side rendering (SSR)
 
-On the server, the stores can be pre-filled and passed to a React's Context in essentially the same way as in the client-side code.
+On the server, the stores can be pre-filled and passed to a React Context in essentially the same way as in the client-side code.
 
 ```jsx
 // On an Express server
@@ -188,7 +188,7 @@ export default Item;
 
 ## Optional fine-tuning
 
-By default, each store update will request a re-render of the component subscribed to the particular store, which is then optimized by React under the hood with its virtual DOM reconciliation algorithm before affecting the real DOM (and this can be sufficient in many cases). The function passed to the `useStoreListener` hook as the optional second parameter can prevent the component from a particular re-render at an even earlier stage if its returned value hasn't changed.
+By default, each store update will request a re-render of the component subscribed to the particular store, which is then optimized by React with its virtual DOM reconciliation algorithm before affecting the real DOM (and this can be sufficient in many cases). The function passed to the `useStoreListener` hook as the optional second parameter can prevent the component from some re-renders at an even earlier stage if its returned value hasn't changed.
 
 ```js
 useStoreListener(store, store => store.get([taskId, 'timestamp']));
