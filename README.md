@@ -19,7 +19,7 @@ import {Store, useStoreListener} from '@axtk/react-store';
 // store in a `StoreContext.Provider` component below.
 const StoreContext = createContext();
 
-// Wrapping up a hook that picks the store from the Context
+// Making up a helper hook that picks the store from the Context
 // and makes a subscription to the store updates.
 const useStore = () => {
     const store = useContext(StoreContext);
@@ -27,28 +27,26 @@ const useStore = () => {
     return store;
 };
 
-// Both `IncrementButton` and `Display` below subscribe to the same
+// Both `PlusButton` and `Display` below subscribe to the same
 // store and thus share the value of `n` contained in the store.
 
-const IncrementButton = () => {
+const PlusButton = () => {
     const store = useStore();
-
     return (
         <button onClick={
             () => store.set('n', store.get('n') + 1)
         }>
-            Increment
+            +
         </button>
     );
 };
 
 const Display = () => {
     const store = useStore();
-
     return <span>{store.get('n')}</span>;
 };
 
-const App = () => <div><IncrementButton/> <Display/></div>;
+const App = () => <div><PlusButton/> <Display/></div>;
 
 ReactDOM.render(
     // Initializing the context with a store.
@@ -78,6 +76,8 @@ import {Store, useStoreListener} from '@axtk/react-store';
 
 const StoreContext = createContext({});
 
+// A helper hook for quicker access to the specific store
+// from within the components
 const useTaskStore = () => {
     const {taskStore} = useContext(StoreContext);
     useStoreListener(taskStore);
@@ -86,11 +86,12 @@ const useTaskStore = () => {
 
 const Task = ({id}) => {
     const taskStore = useTaskStore();
-    // ...
+    const task = taskStore.get(id);
+    return task && <div class="task">{task.name}: {task.status}</div>;
 };
 
 const App = () => {
-    // ...
+    // Fetching, pushing to the store and rendering multiple tasks
 };
 
 ReactDOM.render(
